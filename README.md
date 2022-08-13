@@ -20,6 +20,6 @@ class yourFunction:
         """
 ```
 
-##Owner:
+## Owner:
 Author: Eichenbaum, Daniel. leinaxd.word@gmail.com
 Collaborators: None
