@@ -22,4 +22,5 @@ class yourFunction:
 
 ## Owner:
 Author: Eichenbaum, Daniel. leinaxd.word@gmail.com
-Collaborators: None
+
+Collaborators: None yet
