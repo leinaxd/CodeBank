@@ -27,4 +27,4 @@ class yourFunction:
 ## Description:
 - Version: 1.0.1 
 - Starting Date: 13/08/2022
-- Releasing Date: <ukn>
+- Releasing Date: \<ukn\>
