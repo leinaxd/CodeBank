@@ -21,6 +21,10 @@ class yourFunction:
 ```
 
 ## Owner:
-Author: Eichenbaum, Daniel. leinaxd.word@gmail.com
+- Author: Eichenbaum, Daniel. leinaxd.word@gmail.com
+- Collaborators: None
 
-Collaborators: None yet
+## Description:
+- Version: 1.0.1 
+- Starting Date: 13/08/2022
+- Releasing Date: <ukn>
