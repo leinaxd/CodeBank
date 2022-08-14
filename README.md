@@ -3,6 +3,8 @@ A library for code reutilization
 
 # Software Design
 
+In order to decouple/isolate i suggest to use the following convention:
+
 ```
 class yourFunction:
     """
