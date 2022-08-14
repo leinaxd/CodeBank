@@ -8,3 +8,7 @@
 #   - Wavelet como banco de filtros
 #   - JBB determina la entropía del padre vs los hijos si conviene dividir la señal o no
 #   - Una banda representa un feature. La idea es representar una señal en features de potencia.
+
+#   -> Scattering Wavelet (Deep convolutional network/ wavelet transform)
+#   https://www.youtube.com/watch?v=JyonDStpIsY
+#   PYTHON Library: KYMATIO
