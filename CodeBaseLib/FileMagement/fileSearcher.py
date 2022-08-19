@@ -1,3 +1,9 @@
+"""
+Used by:
+    -widgetLibrary
+
+"""
+
 import os, sys
 
 class fileSystem:

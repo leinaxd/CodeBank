@@ -7,6 +7,7 @@ Evolutionary Algorithm
 
 Example
 ->  Optimize the design parameters for an electrical circuit.
+->  Sheepdream.org -> Humans vote how to design art
 1.  Define each component, parameters, characterizations.
 2.  Enumerate the parameters in a list
 3.  A particular order or selection of parameters is called "The genetic code"
@@ -24,5 +25,7 @@ Example
 11. Measure how much the designs have improved
 12. Repeat for many generations.
 
+Limitations:
+    -> The algorithm does not minimize the number of iterations
 
 """
