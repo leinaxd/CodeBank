@@ -12,3 +12,7 @@
 #   -> Scattering Wavelet (Deep convolutional network/ wavelet transform)
 #   https://www.youtube.com/watch?v=JyonDStpIsY
 #   PYTHON Library: KYMATIO
+
+
+# Better explanation:
+#   https://www.youtube.com/watch?v=jnxqHcObNK4
