@@ -20,7 +20,7 @@ class getPath:
         mode = (permission['owner']+permission['group']*8+permission['other']*64)*mode
         return mode
 
-    def __call__(self, relativePath:str, permission={'exe':True, 'read':True, 'write':True, 'owner':True, 'group':True, 'other':True}):
+    def __call__(self, relativePath:str='', permission={'exe':True, 'read':True, 'write':True, 'owner':True, 'group':True, 'other':True}):
         path = self.globalPath + self.relativePath + relativePath
 
         if path[-1] == '/': dir, file = path, None

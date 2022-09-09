@@ -47,3 +47,34 @@ La matriz  A representa los ciclos predeterminados de recurrencia,
     Entonces la salida aprende a observar qué recurrencias utilizar
     según la entrada, Y cómo traducir las recurrencias en el tiempo.
 """
+
+"""
+idea:
+  -Aprender primero la salida
+  -Aprender luego el reservorio
+"""
+
+
+#EJERCICIO DE RECURRENCIA DE TANH
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# # h = 2*np.random.uniform(size=[100,1])-1
+# h = np.array(range(1,100))/50-1 #h va de -1 a 1 crece lineal
+# v = np.random.normal(size=[100,100])
+# w = np.eye(100,100)
+# # w = np.random.normal(size=[100,100])
+
+# out = np.matmul(v,h)
+# plt.plot(out)
+# ones = np.ones(())
+# r = np.arange(100).reshape(100,1)
+# aux = np.concatenate((out, r))
+# print(aux)
+
+# aux = np.sortrows(aux,1)
+# out = np.matmul(v,h)
+
+# plt.plot(out)
+# h = np.tanh(w*h)
+# plt.show()
