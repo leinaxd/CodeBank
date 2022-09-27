@@ -22,6 +22,23 @@ class yourFunction:
         """
 ```
 
+# Graph aided Software Analysis
+
+The best way to understand the code is with an undirected Graph.
+
+Instead of common inheritance, i propose a tree structure dependency graph.
+
+
+Where
+- Each node is a code fragment self-documented.
+- Each edge is a requirement submodule
+
+Then
+- Plot the "goal tree" graph
+- Show the current implementation path as a tree in the graph. 
+- Search the minimum entropy tree. (The shallower tree)
+MINIMUM/MAXIMUM ENTROPY SPANNING TREE
+
 ## Owner:
 - Author: Eichenbaum, Daniel. leinaxd.word@gmail.com
 - Collaborators: None
