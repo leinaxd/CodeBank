@@ -24,9 +24,9 @@ class yourFunction:
 
 # Graph aided Software Analysis
 
-The best way to understand the code is with an undirected Graph.
+The best way to understand the code is with an undirected (semantic) Graph.
 
-Instead of common inheritance, i propose a tree structure dependency graph.
+Instead of defining an inheritance, i propose a tree structure dependency graph.
 
 
 Where
@@ -40,7 +40,7 @@ Then
 MINIMUM/MAXIMUM ENTROPY SPANNING TREE
 
 ## Owner:
-- Author: Eichenbaum, Daniel. leinaxd.word@gmail.com
+- Author: Eichenbaum, Daniel. eichenbaum.daniel@gmail.com
 - Collaborators: None
 
 ## Description:
