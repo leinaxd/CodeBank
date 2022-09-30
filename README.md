@@ -1,4 +1,4 @@
-# CodeBaseLib
+# CodeBank
 A library for code reutilization
 
 # Software Design
