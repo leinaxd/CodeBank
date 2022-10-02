@@ -4,7 +4,7 @@ import time
 import regex
 
 import os
-from CodeBaseLib.FileMagement import getPath
+from CodeBank.FileMagement import getPath
 
 class logger:
     """
