@@ -16,7 +16,7 @@ class colabPlot:
     """
     Plots a figure in google Colab Notebook
     """
-    def __init__(self, fig:f.Figure, path:str):
+    def __init__(self, fig:f.Figure, path:str=''):
         self.fig = fig
         self.path = path
         assert COLAB, f"You are not in Colab notebook i guess"

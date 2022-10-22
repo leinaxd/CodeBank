@@ -4,7 +4,11 @@ Used by
 """
 
 import os, sys
-
+try: #IF COLAB
+    from google.colab.patches import cv2_imshow
+    COLAB = True
+except: 
+    COLAB = False
 
 class getPath:
     """
@@ -13,7 +17,10 @@ class getPath:
     def __init__(self,relativePath:str='', moduleName='__main__'):
         self.relativePath = relativePath
         self.moduleName = moduleName
-        self.globalPath = os.path.dirname(sys.modules[self.moduleName].__file__)+'/'
+        if COLAB:
+            self.globalPath = '/content/'
+        else:
+            self.globalPath = os.path.dirname(sys.modules[self.moduleName].__file__)+'/'
         
     def calcMode(self, permission:dict) -> dict:
         mode = permission['exe']+permission['write']*2+permission['read']*4
