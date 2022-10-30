@@ -1,5 +1,5 @@
 from random import Random
-from typing import Dict
+from typing import Dict, Union, List
 import pandas as pd
 
 class datasetSplit:
@@ -35,9 +35,16 @@ class datasetSplit:
                                # an external sample of this module would shift the sequence, 
                                # breaking determinism.
 
-    def __init__(self, groupsProportions:dict={'train':1, 'val':1,'test':1}, categoryField:str='index', prioritySmaller=True, shuffle=True):
+    def __init__(self, 
+            groupsProportions:Union[dict, list]={'train':1, 'val':1,'test':1}, 
+            categoryField:str='index', 
+            prioritySmaller=True, 
+            shuffle=True):
+        #identities
         self.categoryField = categoryField
         self.shuffle=shuffle
+        #Default values
+        if isinstance(groupsProportions, list): groupsProportions = {k:1 for k in groupsProportions}
         #Normalize proportions
         den = sum(groupsProportions.values())
         self.groupsProportions = {key:value/den for key,value in groupsProportions.items()}

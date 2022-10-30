@@ -8,7 +8,6 @@ except:
     COLAB = False
 
 from CodeBank.FileMagement import getPath
-from matplotlib import pyplot as plt
 
 import matplotlib.figure as f
 
@@ -21,8 +20,7 @@ class colabPlot:
         self.path = path
         assert COLAB, f"You are not in Colab notebook i guess"
         self.path = getPath(path)
-        self.figName = fig.get_label()
-
+        self.figName = fig.get_label() if fig.get_label() else 'fig'
     def __call__(self):
         self.showColab()
 
