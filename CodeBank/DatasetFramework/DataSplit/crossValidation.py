@@ -1,6 +1,10 @@
 import pandas as pd
 import itertools
-from datasetSplit import datasetSplit
+
+try:
+    from datasetSplit import datasetSplit
+except:
+    from . import datasetSplit
 
 class crossValidation:
     """
@@ -21,12 +25,13 @@ class crossValidation:
     def __init__(self, 
                 k_fold:int, 
                 test_size:int=1,
-                categoryField:str='index'):
+                categoryField:str='index',
+                verbose=False):
         assert k_fold>test_size, f"you can't take {test_size} groups from a len {k_fold} list"
         self.k_fold = k_fold
         self.test_size=test_size
-        self.verbose=True
-
+        self.verbose=verbose
+        
         self.foldsLabels = [f"{k+1}-fold" for k in range(self.k_fold)]
         self.splitter = datasetSplit(self.foldsLabels, categoryField=categoryField)
 
@@ -38,8 +43,9 @@ class crossValidation:
     def __call__(self,dataset:pd.DataFrame):
         assert len(dataset) > self.k_fold, f"You can't split the dataset of len {len(dataset)} into {self.k_fold} parts"
         data = self.splitter(dataset) #splits the dataset into K-folds
-        for k,v in data.items():
-            print(f"{k}\n{v}\n{'='*50}")
+        if self.verbose:
+            for k,v in data.items():
+                print(f"{k}\n{v}\n{'='*50}")
 
 
         for train_fold, test_fold in self.labelSelection():
@@ -60,8 +66,12 @@ if __name__=='__main__':
         print(f"test {test}: fold labels")
         dataset = pd.DataFrame([[-10000,-20000,-30000],[-1000,-2000,-3000],[-100,-200,-300],[1,2,3],[10,20,30],[100,200,300],[1000,2000,3000],[10000,20000,30000]])
         print(f"dataset:\n{dataset}\n{'='*50}")
-        splitter = crossValidation(3,2)
-        splitter(dataset)
+        splitter = crossValidation(3,2,verbose=True)
+        for train_dataset, test_dataset in splitter(dataset):
+            print(f"train:\n{train_dataset}")
+            print(f"test:\n{test_dataset}")
+            
+
     if test == 2:
         print(f"test {test}: combinatorics")
         labels = ['a', 'b','c','d','e']
