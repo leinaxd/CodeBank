@@ -15,6 +15,11 @@ class crossValidation:
         parameter test_size number of test groups combined for test (the rest goes into the training)
     2. returns tuples of train-val
 
+
+    __call__(dataset:pd.DataFrame):
+        yield train_dataset, test_dataset
+
+
     Sources:
         - https://www.wikiwand.com/es/Validaci%C3%B3n_cruzada
         - https://arxiv.org/abs/2104.00673
