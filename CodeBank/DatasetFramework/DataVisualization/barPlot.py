@@ -9,17 +9,20 @@ import matplotlib
 #   pues seaborn no aporta nada...
 
 class barPlot:
-    def __init__(self, categoryField:str, ax:matplotlib.axes.Axes=None):
+    def __init__(self, categoryField:str):
 
         self.categoryField = categoryField
-        self.ax = ax if ax else plt.gca()
        
 
-    def __call__(self,dataset:pd.DataFrame):
+    def __call__(self,
+            dataset:pd.DataFrame, 
+            ax:matplotlib.axes.Axes=None):
+        ax = ax if ax else plt.gca()
+
         category_count = dataset[self.categoryField].value_counts()
         sns.barplot(x=category_count.index, y=category_count)
-        for i,p in enumerate(self.ax.patches):
-            self.ax.annotate(
+        for i,p in enumerate(ax.patches):
+            ax.annotate(
                 f"{category_count.index[i]}\n{p.get_height():.0f}",
                 xy=(p.get_x()+p.get_width()/2, p.get_height()),
                 xytext=(0,-25),
@@ -33,7 +36,13 @@ class barPlot:
                     'edgecolor':'white',
                     'alpha':0.5}
                 )
-    def multiIndexPlot(self, dataset:Dict[str,pd.DataFrame], firstIndex:str=None):
+
+    def multiIndexPlot(self, 
+            dataset:Dict[str,pd.DataFrame], 
+            firstIndex:str=None,
+            ax:matplotlib.axes.Axes=None):
+        ax = ax if ax else plt.gca()
+
         if isinstance(dataset, dict): 
             dataset = pd.concat(dataset, axis=0) #convert into pandas.DataFrame
             dataset = dataset.reset_index()
@@ -48,8 +57,8 @@ class barPlot:
         dataset = dataset.rename(columns={0:'count'})
         sns.barplot(data=dataset, x=firstIndex, y='count',hue=self.categoryField, hue_order=categoryOrder)
         
-        for i,p in enumerate(self.ax.patches):
-            self.ax.annotate(
+        for i,p in enumerate(ax.patches):
+            ax.annotate(
                 f"{categoryOrder[i//len(categoryOrder)]}\n{p.get_height():.0f}",
                 xy=(p.get_x()+p.get_width()/2, p.get_height()),
                 xytext=(0,-25),
