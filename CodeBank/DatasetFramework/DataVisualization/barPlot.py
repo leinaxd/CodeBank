@@ -20,7 +20,7 @@ class barPlot:
         ax = ax if ax else plt.gca()
 
         category_count = dataset[self.categoryField].value_counts()
-        sns.barplot(x=category_count.index, y=category_count)
+        sns.barplot(x=category_count.index, y=category_count,ax=ax)
         for i,p in enumerate(ax.patches):
             ax.annotate(
                 f"{category_count.index[i]}\n{p.get_height():.0f}",
@@ -55,7 +55,7 @@ class barPlot:
         dataset = dataset[[firstIndex,self.categoryField]].value_counts()
         dataset = dataset.reset_index()
         dataset = dataset.rename(columns={0:'count'})
-        sns.barplot(data=dataset, x=firstIndex, y='count',hue=self.categoryField, hue_order=categoryOrder)
+        sns.barplot(data=dataset, x=firstIndex, y='count',hue=self.categoryField, hue_order=categoryOrder,ax=ax)
         
         for i,p in enumerate(ax.patches):
             ax.annotate(
