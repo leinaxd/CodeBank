@@ -19,10 +19,9 @@ class barPlot:
             ax:matplotlib.axes.Axes=None,
             hold_on:bool=False):
         ax = ax if ax else plt.gca()
-        if hold_on: #start fresh or overwrite
-            prevPatches = len(ax.patches)
-        else:
-            ax.patches = [] 
+        ax.patches = ax.patches if hold_on else [] #start fresh or overwrite
+        prevPatches = len(ax.patches) #count old drawings
+
         category_count = dataset[self.categoryField].value_counts()
         sns.barplot(x=category_count.index, y=category_count,ax=ax)
         for i,p in enumerate(ax.patches):
