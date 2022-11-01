@@ -16,12 +16,19 @@ class barPlot:
 
     def __call__(self,
             dataset:pd.DataFrame, 
-            ax:matplotlib.axes.Axes=None):
+            ax:matplotlib.axes.Axes=None,
+            hold_on:bool=False):
         ax = ax if ax else plt.gca()
-        ax.clear() #check ax.patches to avoid an exception
+        if hold_on: #start fresh or overwrite
+            prevPatches = len(ax.patches)
+        else:
+            ax.patches = [] 
         category_count = dataset[self.categoryField].value_counts()
         sns.barplot(x=category_count.index, y=category_count,ax=ax)
         for i,p in enumerate(ax.patches):
+            print(i)
+            if i < prevPatches: continue #skip old patches
+            print(i)
             ax.annotate(
                 f"{category_count.index[i]}\n{p.get_height():.0f}",
                 xy=(p.get_x()+p.get_width()/2, p.get_height()),
