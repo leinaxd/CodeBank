@@ -17,10 +17,13 @@ class barPlot:
     def __call__(self,
             dataset:pd.DataFrame, 
             ax:matplotlib.axes.Axes=None):
+        print('a')
         ax = ax if ax else plt.gca()
-
+        print('ax',ax)
         category_count = dataset[self.categoryField].value_counts()
+        print('b')
         sns.barplot(x=category_count.index, y=category_count,ax=ax)
+        print('c')
         for i,p in enumerate(ax.patches):
             ax.annotate(
                 f"{category_count.index[i]}\n{p.get_height():.0f}",
@@ -36,6 +39,7 @@ class barPlot:
                     'edgecolor':'white',
                     'alpha':0.5}
                 )
+        print('d')
 
     def multiIndexPlot(self, 
             dataset:Dict[str,pd.DataFrame], 
