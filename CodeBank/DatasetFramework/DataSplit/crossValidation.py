@@ -1,6 +1,7 @@
 import pandas as pd
 import itertools
 
+
 try:
     from datasetSplit import datasetSplit
 except:
@@ -39,7 +40,6 @@ class crossValidation:
         
         self.foldsLabels = [f"{k+1}-fold" for k in range(self.k_fold)]
         self.splitter = datasetSplit(self.foldsLabels, categoryField=categoryField)
-
     def labelSelection(self):
         for test_fold in itertools.combinations(self.foldsLabels, self.test_size):
             train_fold = [label for label in self.foldsLabels if label not in test_fold]

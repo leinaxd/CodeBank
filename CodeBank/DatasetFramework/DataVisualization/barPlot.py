@@ -25,9 +25,7 @@ class barPlot:
         category_count = dataset[self.categoryField].value_counts()
         sns.barplot(x=category_count.index, y=category_count,ax=ax)
         for i,p in enumerate(ax.patches):
-            print(i)
             if i < prevPatches: continue #skip old patches
-            print(i)
             ax.annotate(
                 f"{category_count.index[i]}\n{p.get_height():.0f}",
                 xy=(p.get_x()+p.get_width()/2, p.get_height()),
@@ -109,3 +107,4 @@ if __name__=='__main__':
         categoryField = 'island'
         plotter = barPlot(categoryField)
         plotter.multiIndexPlot(df)
+
