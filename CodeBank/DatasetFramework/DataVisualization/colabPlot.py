@@ -1,3 +1,6 @@
+"""
+Author: Eichenbaum, Daniel 1/11/2022
+"""
 
 try: #IF COLAB
     from google.colab.patches import cv2_imshow
@@ -15,25 +18,27 @@ class colabPlot:
     """
     Plots a figure in google Colab Notebook
     """
-    def __init__(self, fig:f.Figure, path:str=''):
-        self.fig = fig
+    ver = '1.0.1'
+    def __init__(self, path:str=''):
         self.path = path
         assert COLAB, f"You are not in Colab notebook i guess"
         self.path = getPath(path)
-        self.figName = fig.get_label() if fig.get_label() else 'fig'
-    def __call__(self, clear=True):
-        self.showColab(clear)
 
-    def saveFig(self):
-        path = self.path(self.figName+'.png')
-        self.fig.savefig(path, format='png')
-        return path
-
-    def showColab(self, clear):
-        path = self.saveFig()
+    def __call__(self, fig:f.Figure, clear:bool=False):
+        """
+        Saves the fig in path/<fig_name>.png, then show it in colab notebook
+        """
+        path = self.saveFig(fig)
         if clear: clear_output()
         im = imread(path)
         cv2_imshow(im)
+
+    def saveFig(self, fig:f.Figure):
+        figName = fig.get_label() if fig.get_label() else 'fig'
+        path = self.path(figName+'.png')
+        fig.savefig(path, format='png')
+        return path
+
 
 
 
