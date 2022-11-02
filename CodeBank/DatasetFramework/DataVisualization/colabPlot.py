@@ -24,15 +24,17 @@ class colabPlot:
         assert COLAB, f"You are not in Colab notebook i guess"
         self.path = getPath(path)
 
-    def __call__(self, fig:f.Figure, clear:bool=False):
+    def __call__(self, fig:f.Figure):
         """
         Saves the fig in path/<fig_name>.png, then show it in colab notebook
         """
         path = self.saveFig(fig)
-        if clear: clear_output()
         im = imread(path)
         cv2_imshow(im)
 
+    def clear(self, clear:bool=False):
+        if clear: clear_output()
+        
     def saveFig(self, fig:f.Figure):
         figName = fig.get_label() if fig.get_label() else 'fig'
         path = self.path(figName+'.png')
