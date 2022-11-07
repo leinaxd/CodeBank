@@ -66,7 +66,7 @@ if __name__=='__main__':
     import os
     os.system('clear')
 
-    test = 1
+    test = 3
     if test == 1:
         print(f"test {test}: fold labels")
         dataset = pd.DataFrame([[-10000,-20000,-30000],[-1000,-2000,-3000],[-100,-200,-300],[1,2,3],[10,20,30],[100,200,300],[1000,2000,3000],[10000,20000,30000]])
@@ -89,7 +89,10 @@ if __name__=='__main__':
         print(train_folds)
     if test == 3:
         print(f"test {test} labels")
-        splitter = crossValidation(5,1)
+        splitter = crossValidation(6,2)
         for train, test in splitter.labelSelection():
             print(f"train:\t{train}")
             print(f"test:\t{test}")
+
+
+    
