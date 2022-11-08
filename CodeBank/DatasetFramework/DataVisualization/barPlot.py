@@ -107,4 +107,3 @@ if __name__=='__main__':
         categoryField = 'island'
         plotter = barPlot(categoryField)
         plotter.multiIndexPlot(df)
-
