@@ -27,7 +27,11 @@ class bootStrap:
     
     """
 
-    def __init__(self, sample_size:int, categoryField:str, nTrain:int=1, nTest:int=1):
+    def __init__(self, 
+            sample_size:int, 
+            categoryField:str='index', 
+            nTrain:int=1, 
+            nTest:int=1):
         self.sample_size = sample_size
 
         self.splitter = datasetSplit({'train':nTrain,'test':nTest}, categoryField=categoryField)
@@ -58,8 +62,9 @@ if __name__ == '__main__':
 
         print(f"data:\n{data}\n{'='*50}")
 
-        splitter = bootStrapping(2,categoryField='category')
+        splitter = bootStrap(2,categoryField='category')
 
         for train, test in splitter(data):
             print(f"|train|={len(train)}:\n{train}")
             print(f"|test|={len(test)}:\n{test}\n{'='*50}")
+    print(round(3*(1-0.7)))
