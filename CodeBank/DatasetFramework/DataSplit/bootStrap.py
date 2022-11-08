@@ -6,7 +6,7 @@ except:
     from . import datasetSplit
 
 
-class bootStrapping:
+class bootStrap:
     """
     Performs the bootstrap evaluation loop
 
