@@ -1,3 +1,11 @@
+"""
+Author: Eichenbaum, Daniel.
+Date: 8/11/2022
+
+Used by:
+    -bootStrapping
+    -crossValidation
+"""
 from random import Random
 from typing import Dict, Union, List
 import pandas as pd
