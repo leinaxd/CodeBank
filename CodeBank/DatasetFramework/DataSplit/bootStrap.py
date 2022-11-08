@@ -67,4 +67,4 @@ if __name__ == '__main__':
         for train, test in splitter(data):
             print(f"|train|={len(train)}:\n{train}")
             print(f"|test|={len(test)}:\n{test}\n{'='*50}")
-    print(round(3*(1-0.7)))
+    
