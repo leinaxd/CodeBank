@@ -28,10 +28,13 @@ class bootStrap:
     """
 
     def __init__(self, 
+            nTrain:int, 
+            nTest:int,
             sample_size:int, 
             categoryField:str='index', 
-            nTrain:int=1, 
-            nTest:int=1):
+            ):
+        assert nTrain>0 and nTest>0, f"nTrain and nTest must be greater than cero"
+
         self.sample_size = sample_size
 
         self.splitter = datasetSplit({'train':nTrain,'test':nTest}, categoryField=categoryField)
