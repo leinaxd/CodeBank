@@ -12,7 +12,8 @@ class bootStrap:
 
     parameters:
         <categoryField> the dataset column for sample in a balanced manner
-        <nTrain>/<nTest> proportion of the splitted dataset
+        <train_test_pcn> proportion of train samples vs test samples. 
+            train_test_pcn=1, means no test dataset
     1. split the dataset into train-val in a balanced fashion
     2. returns tuples of train-val
     3. Repeat <sample_size> times
@@ -32,7 +33,8 @@ class bootStrap:
             sample_size:int, 
             categoryField:str='index', 
             ):
-
+        assert 0<train_test_pcn and train_test_pcn < 1, f"train_test_pcn must lay between (0,1)"
+        
         self.sample_size = sample_size
         nTrain = train_test_pcn
         nTest  = 1-train_test_pcn
