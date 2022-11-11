@@ -123,14 +123,16 @@ class datasetSplit:
                 # print(key,group_class,ix)
         return samples_ix
         
-    def __call__(self, data:pd.DataFrame) -> pd.DataFrame:
+    def __call__(self, data:pd.DataFrame, resetIx=True) -> pd.DataFrame:
         data_size   = len(data)
         groups_len  = self.splitRatio(data_size)
         if self.categoryField in [None, 'index']: samples_ix  = self.sampleByIndex(data_size, groups_len)
         else:                                     samples_ix  = self.sampleByGroup(data, groups_len)
         
         sets = {key:data.iloc[ix] for key, ix in samples_ix.items()}
-
+    
+        if resetIx: #reset index
+            for k, v in sets: v.reindex()
         return sets
 
 
