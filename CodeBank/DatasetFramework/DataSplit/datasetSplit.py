@@ -6,6 +6,7 @@ Used by:
     -bootStrapping
     -crossValidation
 """
+import time
 from random import Random
 from typing import Dict, Union, List
 import pandas as pd
@@ -16,10 +17,12 @@ class datasetSplit:
         Split the data (pandas.DataFrame) into sets (usually 'train', 'test', 'val')
         if the categoryField is set, then it will try to priotize balaced groups of each class
     Parameters:
-        groupsProportions: a dict containing the proportions for each class
-            default = {'train':1, 'val':1, 'test':1}
-        categoryField: the name of the class header used for creating balaced datasets
-            default = 'index'
+        groupsProportions: {'train':1, 'val':1, 'test':1}
+            a dict containing the proportions for each class
+        categoryField: 'index'
+            the name of the class header used for creating balaced datasets
+        randomSeed: True
+            use a random generated seed
     Example:
         >>> data = pd.DataFrame(
                 {'data':['A','B','C','D','E', 'F','G','H','I','J'],
@@ -47,17 +50,20 @@ class datasetSplit:
             groupsProportions:Union[dict, list]={'train':1, 'val':1,'test':1}, 
             categoryField:str='index', 
             prioritySmaller=True, 
-            shuffle=True):
+            shuffle=True,
+            randomSeed=True):
         #identities
         self.categoryField = categoryField
         self.shuffle=shuffle
+        self.priority = prioritySmaller
         #Default values
         if isinstance(groupsProportions, list): groupsProportions = {k:1 for k in groupsProportions}
         #Normalize proportions
         den = sum(groupsProportions.values())
         self.groupsProportions = {key:value/den for key,value in groupsProportions.items()}
-        self.priority = prioritySmaller
-
+        #random seed
+        if randomSeed: self.__class__.ixGenerator = Random(time.time())
+        
     def splitRatio(self, data_size:int) -> dict:
         """
         If there were loose samples, 
