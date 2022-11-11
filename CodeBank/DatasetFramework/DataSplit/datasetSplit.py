@@ -132,7 +132,7 @@ class datasetSplit:
         sets = {key:data.iloc[ix] for key, ix in samples_ix.items()}
     
         if resetIx: #reset original index
-            for v in sets.values(): v.reset_index()
+            for k, v in sets.items(): sets[k]=v.reset_index()
         return sets
 
 
