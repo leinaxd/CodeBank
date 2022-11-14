@@ -26,17 +26,17 @@ class sentenceSplit:
             s = e-self.offset
         return result
 
-    def __call__(self, data:Union[pd.DataFrame, str]) -> Union[pd.DataFrame, list]:
-        if isinstance(data, str): return self.splitString(data)
-        else:
-            raise NotImplementedError
+    def __call__(self, data:Union[pd.Series, str]) -> Union[pd.DataFrame, list]:
+        if isinstance(data, str):         return self.splitString(data)
+        elif isinstance(data, pd.Series): return data.apply(self.splitString)
+        else:                             raise NotImplementedError
 
 
 
 
 
 if __name__ == '__main__':
-    test = 2
+    test = 3
     
     if test == 1:
         print(f"test {test} manual overlapping")
@@ -60,5 +60,10 @@ if __name__ == '__main__':
 
     if test == 3:
         print(f"test {test}: data frame test")
-        data = pd.DataFrame('asd')
+        data = pd.DataFrame({'lower':['a b c d e f g h i j','aa bb cc dd ee ff gg hh ii jj'], 
+                             'upper':['A B C D E F G H I J','AA BB CC DD EE FF GG HH II JJ']})
+        splitter = sentenceSplit(4,0.5)
+        out = splitter(data['upper'])
+        data['upper4']=out
+        print(data.T)
 
