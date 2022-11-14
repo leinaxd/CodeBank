@@ -1,9 +1,11 @@
 from typing import Callable
 import pandas as pd
 from CodeBank.DatasetFramework.DataSplit import sentenceSplit
-from CodeBank.DatasetFramework.
+from CodeBank.DatasetFramework.DataEstimation import dataEstimator
+
 class continuousClassification:
     """ 
+    Recipe
     1. Splits the data into n-subsequences
     2. Apply the estimator in each step
     3. return a sequence of appling the estimator to each subsequence
@@ -11,21 +13,13 @@ class continuousClassification:
     # raise NotImplementedError('lo divido en sentenceSplitter y data estimation')
     def __init__(self, n_words, overlap, estimatorFunc:Callable[...,dict], srcField:str):
         self.splitter = sentenceSplit(n_words, overlap)
-        self.estimator = estimatorFunc
+        self.estimator = dataEstimator(estimatorFunc)
         self.srcField = srcField
-    def __call__(self, data:pd.Series):
-        #TODO:
-        #   hacer el splitting independiente de esto
+
+    def __call__(self, data:pd.DataFrame):
         out = self.splitter(data[self.srcField])
-
-        # out = out.apply(self.estimator)
-        newData = {}
-        for sample in out:
-            estimation = self.estimator(sample)
-            for k, v in estimation.items():
-                newData[k].append(v)
-
-        return pd.DataFrame(estimation)
+        newData = self.estimator(out)
+        return pd.concat((data,newData),1)
 
 
 if __name__ == '__main__':
@@ -38,8 +32,8 @@ if __name__ == '__main__':
     if test == 1:
         print(f"test {test}: dataframe")
         def estimator(txt): 
-            # return txt[0]+' <-> '+txt[1]
             return {'parte_1':txt[0],'parte_2':txt[1]}
         hist = continuousClassification(3,0,estimator,'b')
         out = hist(data)
         print(out)
+        
