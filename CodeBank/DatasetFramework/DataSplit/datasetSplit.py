@@ -51,11 +51,13 @@ class datasetSplit:
             categoryField:str='index', 
             prioritySmaller=True, 
             shuffle=True,
-            randomSeed=True):
+            randomSeed=True,
+            forceEqualLen=False):
         #identities
         self.categoryField = categoryField
         self.shuffle=shuffle
-        self.priority = prioritySmaller
+        self.priority = not prioritySmaller
+        self.forceEqualLen=forceEqualLen
         #Default values
         if isinstance(groupsProportions, list): groupsProportions = {k:1 for k in groupsProportions}
         #Normalize proportions
@@ -78,22 +80,26 @@ class datasetSplit:
             rem -= 1
         return proportions
 
-    def sampleByIndex(self, data_size:int, groups:dict) -> dict:
-        samples = list(range(data_size))
+    def sampleByIndex(self, data:pd.DataFrame) -> dict:
+        groups_len  = self.splitRatio(len(data))
+
+        samples = list(range(len(data)))
         if self.shuffle: self.ixGenerator.shuffle(samples)
         samples_ix = {}
         start = 0
-        for key, size in groups.items():
+        for key, size in groups_len.items():
             end = start+size
             samples_ix[key] = samples[start:end]
             start = end
         return samples_ix
 
-    def sampleByGroup(self, data:pd.DataFrame, group_sizes:Dict[str,int]) -> Dict[str,list]:
+    def sampleByGroup(self, data:pd.DataFrame) -> Dict[str,list]:
         """
         groups: {key:size}
         return: {key:samples_ix}
         """
+        group_sizes = self.splitRatio(len(data))
+
         key_ix          = 0 #place the new index in this position
         keys = list(group_sizes.keys())
 
@@ -102,7 +108,6 @@ class datasetSplit:
             ixs = ixs.tolist()
             if self.shuffle: self.ixGenerator.shuffle(ixs)
             samples[key] = ixs
-        
 
         group_class_ix  = 0 
         group_keys = list(samples.keys())
@@ -128,15 +133,38 @@ class datasetSplit:
                 samples_ix[key].append(ix)
                 # print(key,group_class,ix)
         return samples_ix
+
+    def forcedSampledGroup(self, data:pd.DataFrame):
         
+        samples = data.groupby(self.categoryField).indices
+        for key, ixs in samples.items(): #{group_class : index_list}
+            ixs = ixs.tolist()
+            if self.shuffle: self.ixGenerator.shuffle(ixs)
+            samples[key] = ixs
+
+        
+        if self.forceEqualLen:
+            maxLen = min([len(v) for v in samples.values()])
+            samples = {k:v[:maxLen] for k,v in samples.items()}
+        groups_len = self.splitRatio(maxLen)
+
+        samples_ix = {key:[] for key in groups_len.keys()}
+        while sum(groups_len.values()):
+            for group, count in groups_len.items():
+                if not count: continue
+                groups_len[group] -= 1
+                for v in samples.values(): #paste 1 item of each class
+                    samples_ix[group].append(v.pop())
+
+        return samples_ix
+
     def __call__(self, data:pd.DataFrame, resetIx=True) -> pd.DataFrame:
-        data_size   = len(data)
-        groups_len  = self.splitRatio(data_size)
-        if self.categoryField in [None, 'index']: samples_ix  = self.sampleByIndex(data_size, groups_len)
-        else:                                     samples_ix  = self.sampleByGroup(data, groups_len)
-        
+        if self.categoryField in [None, 'index']: samples_ix  = self.sampleByIndex(data)
+        elif self.forceEqualLen:                  samples_ix  = self.forcedSampledGroup(data)
+        else:                                     samples_ix  = self.sampleByGroup(data)
+
         sets = {key:data.iloc[ix] for key, ix in samples_ix.items()}
-    
+        
         if resetIx: #reset original index
             for k, v in sets.items(): sets[k]=v.reset_index()
         return sets
@@ -144,16 +172,17 @@ class datasetSplit:
 
 
 if __name__ == '__main__':
-    def do(data, group='index', proportions={'train':1,'val':1,'test':1}):
-        splitter = datasetSplit(groupsProportions=proportions,categoryField=group)
-        print(f"data\tlen:{len(data)}\n{data}\n\n\n")
+    def do(data, group='index', proportions={'train':1,'val':1,'test':1},forced=False):
+        splitter = datasetSplit(groupsProportions=proportions,categoryField=group,forceEqualLen=forced)
+        print(f"{'='*50}\ndata\tlen:{len(data)}\n{data}\n{'='*50}")
+        print(f"proportions: {proportions}\n")
         data = splitter(data)
         print(f"train\tlen:{len(data['train'])}\n{data['train'] if len(data['train']) else ''}\n")
         print(f"test\tlen:{len(data['test'])}\n{data['test'] if len(data['test']) else ''}\n")
         print(f"val\tlen:{len(data['val'])}\n{data['val'] if len(data['val']) else ''}\n")
         print('\n')
 
-    test = 4
+    test = 2
     if test == 1:
         data = pd.DataFrame({'class A':['A'],
                              'class B':['alpha'],
@@ -196,3 +225,30 @@ if __name__ == '__main__':
                              'category':  [1,2,1,1,2,2,3,3,3,2]}) #3 samples of each group
         do(data,'category', {'train':1,'val':1,'test':1})
 
+    elif test == 6:
+        print(f'test {test}\nforce equal length split')
+        data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J'],
+                             'category':  [1,2,1,1,2,2,3,3,3,2]}) #3 samples of each group
+        do(data,'category', {'train':1,'val':1,'test':1},True)
+
+        data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J'],
+                             'category':  [1,2,1,1,2,2,3,3,3,1]}) #3 samples of each group
+        do(data,'category', {'train':1,'val':2,'test':2},True)
+    elif test == 7:
+        print(f'test {test}\nforce equal length split. Parte 2. More cases')
+        data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J','k','l','m','n','o','p'],
+                             'category':  [1,2,1,1,2,2,3,3,3,1,1,1,1,1,1,1]}) #3 samples of each group
+        do(data,'category', {'train':1,'val':2,'test':2},True)
+
+        data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J','k','l','m','n','o','p'],
+                             'category':  [1,2,1,1,2,2,3,3,3,1,1,1,1,1,2,3]}) #3 samples of each group
+        do(data,'category', {'train':1,'val':2,'test':2},True)
+
+
+        data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J','k','l','m','n','o','p','q','r','s'],
+                             'category':  [1,2,1,1,2,2,3,3,3,1,1,1,1,1,2,3,1,2,3]}) #3 samples of each group
+        do(data,'category', {'train':1,'val':2,'test':2},True)
+
+        data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J','k','l','m','n','o','p','q','r','s','t','u','v'],
+                             'category':  [1,2,1,1,2,2,3,3,3,1,1,1,1,1,2,3,1,2,3,1,2,3]}) #3 samples of each group
+        do(data,'category', {'train':1,'val':2,'test':2},True)
