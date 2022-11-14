@@ -32,14 +32,15 @@ class bootStrap:
             train_test_pcn:float, 
             sample_size:int, 
             categoryField:str='index', 
+            forceEqualLen=False,
             ):
         assert 0<train_test_pcn and train_test_pcn < 1, f"train_test_pcn must lay between (0,1)"
         
         self.sample_size = sample_size
+        self.forceEqualLen = forceEqualLen
         nTrain = train_test_pcn
         nTest  = 1-train_test_pcn
         self.splitter = datasetSplit({'train':nTrain,'test':nTest}, categoryField=categoryField)
-
     def __len__(self): 
         return self.sample_size
 
@@ -51,7 +52,8 @@ class bootStrap:
             data = self.splitter(dataset) #splits the dataset into K-folds
             train_dataset = data['train']
             test_dataset = data['test']
-            yield train_dataset, test_dataset
+            maxLen = min(len(train_dataset), len(test_dataset)) if self.forceEqualLen else -1
+            yield train_dataset[:maxLen], test_dataset[:maxLen]
         
 
 if __name__ == '__main__':
