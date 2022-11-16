@@ -5,13 +5,10 @@ class dataEstimator:
     """
     Applies an estimator to a pandas Series
     """
-
-    def __init__(self, estimator:Callable[...,dict]):
-        self.estimator = estimator
-    def __call__(self, data:pd.Series):
+    def __call__(self, data:pd.Series, estimator:Callable[..., dict]):
         result = {}
         for sample in data:
-            out = self.estimator(sample)
+            out = estimator(sample)
             for k,v in out.items():
                 if k not in result: result[k] = []
                 result[k].append(v)
@@ -31,8 +28,8 @@ if __name__ == '__main__':
         print(f"test {test}: dataframe")
         def count(txt): 
             return {'char':txt[:3],'len':len(txt)}
-        estimator = dataEstimator(count)
-        out = estimator(data['b'])
+        estimator = dataEstimator()
+        out = estimator(data['b'], count)
         print(out)
         data = pd.concat((data,out),1)
         print(data)
