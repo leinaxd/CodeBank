@@ -11,19 +11,16 @@ class segmentatedClassification:
     3. return a sequence of appling the estimator to each subsequence
     """
     # raise NotImplementedError('lo divido en sentenceSplitter y data estimation')
-    def __init__(self, n_words, overlap, estimatorFunc:Callable[...,dict], srcField:str, concat=False):
+    def __init__(self, n_words, overlap, estimatorFunc:Callable[...,dict], srcField:str):
         self.splitter = sentenceSplit(n_words, overlap)
         self.estimator = dataEstimator(estimatorFunc)
         self.srcField = srcField
-        self.concat=concat
 
     def __call__(self, data:pd.DataFrame):
         out = self.splitter(data[self.srcField])
         newData = self.estimator(out)
-        if self.concat:
-            return pd.concat((data,newData),1)
-        else:
-            return newData
+        return pd.concat((data,newData),1)
+
 
 
 if __name__ == '__main__':
