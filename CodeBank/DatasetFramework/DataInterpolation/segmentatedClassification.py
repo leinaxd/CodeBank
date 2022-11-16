@@ -3,7 +3,7 @@ import pandas as pd
 from CodeBank.DatasetFramework.DataSplit import sentenceSplit
 from CodeBank.DatasetFramework.DataEstimation import dataEstimator
 
-class continuousClassification:
+class segmentatedClassification:
     """ 
     Recipe
     1. Splits the data into n-subsequences
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         print(f"test {test}: dataframe")
         def estimator(txt): 
             return {'parte_1':txt[0],'parte_2':txt[1]}
-        hist = continuousClassification(3,0,estimator,'b')
+        hist = segmentatedClassification(3,0,estimator,'b')
         out = hist(data)
         print(out)
         

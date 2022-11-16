@@ -1,1 +1,1 @@
-from .continuousClassification import continuousClassification
+from .segmentatedClassification import segmentatedClassification
