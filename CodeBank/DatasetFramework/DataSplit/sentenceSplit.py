@@ -14,13 +14,14 @@ class sentenceSplit:
         self.delimiter  = ' '
         self.n_words = n_words
         self.offset = int(overlap*n_words)
-        
+        # self.min_len = self.n_words*0.5 #at least do half window
+        self.min_len = self.n_words*overlap #at least do half window
 
     def splitString(self, txt:str)-> list:
         txt = txt.split(self.delimiter)
         result = []
         s=0
-        while s < len(txt):
+        while s < len(txt)-self.min_len:
             e = s + self.n_words
             result.append(' '.join(txt[s:e]))
             s = e-self.offset
@@ -36,7 +37,7 @@ class sentenceSplit:
 
 
 if __name__ == '__main__':
-    test = 3
+    test = 4
     
     if test == 1:
         print(f"test {test} manual overlapping")
@@ -67,3 +68,11 @@ if __name__ == '__main__':
         data['upper4']=out
         print(data.T)
 
+    if test == 4:
+        print(f"test {test}: last split is useless. check the last item isn't already cover by the last but one item\n")
+        txt = 'Estaba caminando por el parque hasta que me encontré un cachorrito, era tan tierno que me lo llevé a mi casa. He notado que este cachorrito tenía dueño y era justamente de aquella persona que andaba persiguiendo aquel día.'
+        for o in [0, 0.5, 0.9]:
+            print(f"overlapping of: {o}")
+            splitter = sentenceSplit(4,o)
+            out = splitter(txt)
+            print(out,'\n')
