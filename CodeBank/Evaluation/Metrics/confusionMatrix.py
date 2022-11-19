@@ -21,6 +21,8 @@ class confusionMatrix:
         FN: False negative: count(Predicted(negative) == True(positive))
         Accuracy = TP+TN / Total
 
+    TODO: estandarizar respecto a 
+        sklearn.metrics.confusion_matrix
         
     """
     def __init__(self, labels:Sequence[str]):
