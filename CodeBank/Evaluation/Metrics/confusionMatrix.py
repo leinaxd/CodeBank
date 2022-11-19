@@ -44,7 +44,7 @@ class confusionMatrix:
         predicted:Union[list,int], 
         true_label:Union[list,int]):
         if isinstance(predicted, int):  predicted = [predicted]
-        if isinstance(true_label, int): true_label = [true]
+        if isinstance(true_label, int): true_label = [true_label]
         assert len(predicted) == len(true_label), f"predicted and true_label missmatched in size"
 
         #be careful, positive means H0 and negative means H1, 
