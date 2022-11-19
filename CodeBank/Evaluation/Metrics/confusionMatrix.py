@@ -43,6 +43,8 @@ class confusionMatrix:
     def __call__(self, 
         predicted:Union[list,int], 
         true_label:Union[list,int]):
+        #TODO:
+        # if predicted/true_label are a batch of tensors? they do not cast to a list...
         if not isinstance(predicted, list):  predicted = [predicted]
         if not isinstance(true_label, list): true_label = [true_label]
         assert len(predicted) == len(true_label), f"predicted and true_label missmatched in size"
