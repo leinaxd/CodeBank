@@ -28,6 +28,7 @@ class confusionMatrix:
         self.labels = labels
         self.TP = self.TN = self.FP = self.FN = 0 #current values
 
+
     def load_state(self, history:list):
         self.history = history
     def save_state(self) -> list:
@@ -60,23 +61,25 @@ class confusionMatrix:
             
 
     def compute(self, type:str=''):
+        #update the batch
         if self.TP or self.TN or self.FP or self.FN: #if new data
             self.history.append((self.TP, self.TN, self.FP, self.FN))
             self.TP = self.TN = self.FP = self.FN = 0
 
-        if type.lower() in [None,'']:
-            func = lambda TP,TN,FP,FN:(TP,TN,FP,FN) #identity
+        #compute the metric
+        if type.lower() in [None,'','all','confusion']:
+            self.func = lambda TP,TN,FP,FN:(TP,TN,FP,FN) #identity
         elif type.lower() in ['acc','accuracy']:
-            func = lambda TP,TN,FP,FN: (TP+TN)/(TP+TN+FP+FN)
+            self.func = lambda TP,TN,FP,FN: (TP+TN)/(TP+TN+FP+FN)
         else:
             raise NotImplementedError(f"{type} is not implemented yet")
-        
-        return [func(TP,TN,FP,FN) for TP,TN,FP,FN in self.history]
+
+        return [self.func(TP,TN,FP,FN) for TP,TN,FP,FN in self.history]
 
 
 
 if __name__ == '__main__':
-    test = 1
+    test = 2
     if test == 1:
         print(f'test {test}: load the metric')
         metric = confusionMatrix(['H0','H1'])
@@ -96,6 +99,26 @@ if __name__ == '__main__':
              [0,4,0,4],
              [2,2,2,2],
              [0,0,4,4]]):
+            metric(predicted,true)
+            metric.compute()
+            print(f"true:{true}\t|predicted:{predicted}\t|expected:{expected}")
+        print('history:',metric.compute())
+        print(metric.compute('acc'))
+    if test == 2:
+        import torch
+        import numpy as np
+        print(f'test {test}: numpy/torch compatibility')
+        metric = confusionMatrix(['H0','H1'])
+        print(f'(TP,TN,FP,FN)')
+        for true, predicted, expected in zip(
+            [np.array([0,0,0,0,1,1,1,1]),
+             torch.tensor([0,0,0,0,1,1,1,1])],
+
+            [[0,0,0,0,0,0,0,0],
+             [1,1,1,1,1,1,1,1]],
+
+            [[4,0,4,0],
+             [0,4,0,4]]):
             metric(predicted,true)
             metric.compute()
             print(f"true:{true}\t|predicted:{predicted}\t|expected:{expected}")
