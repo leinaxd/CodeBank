@@ -21,8 +21,10 @@ class confusionMatrix:
         FN: False negative: count(Predicted(negative) == True(positive))
         Accuracy = TP+TN / Total
 
-    TODO: estandarizar respecto a 
-        sklearn.metrics.confusion_matrix
+    NOTE: 
+        in sklearn the order of meassure is (TN, FP, FN, TP)
+            sklearn.metrics.confusion_matrix
+        while here the order of meassure is (TP, TN, FP, FN)
         
     """
     def __init__(self, labels:Sequence[str]):
