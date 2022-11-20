@@ -1,4 +1,5 @@
 from typing import Union, Sequence
+from collections import namedtuple
 
 class confusionMatrix:
     """
@@ -49,9 +50,12 @@ class confusionMatrix:
         true_label:Union[list,int]):
         #TODO:
         # if predicted/true_label are a batch of tensors? they do not cast to a list...
-        if not isinstance(predicted, list):  predicted = [predicted]
-        if not isinstance(true_label, list): true_label = [true_label]
-        assert len(predicted) == len(true_label), f"predicted and true_label missmatched in size"
+        if isinstance(predicted, int):  predicted = [predicted]
+        if isinstance(true_label, int): true_label = [true_label]
+        # if isinstance(true_label)
+        len_predicted = sum(1 for _ in predicted)
+        len_true      = sum(1 for _ in true_label)
+        assert len_predicted == len_true, f"predicted and true_label missmatched in size"
 
         #be careful, positive means H0 and negative means H1, 
         # don't confuse with boolean True/False
@@ -73,19 +77,38 @@ class confusionMatrix:
             self.TP = self.TN = self.FP = self.FN = 0
 
         #compute the metric
-        if type.lower() in [None,'','all','confusion']:
-            self.func = lambda TP,TN,FP,FN:(TP,TN,FP,FN) #identity
+        if type.lower() in [None,'']:
+            return self.history
+        elif type.lower() in ['confusion','c']:
+            return self.doConfusion()
         elif type.lower() in ['acc','accuracy']:
-            self.func = lambda TP,TN,FP,FN: (TP+TN)/(TP+TN+FP+FN)
+            return self.doAccuracy()
         else:
             raise NotImplementedError(f"{type} is not implemented yet")
 
-        return [self.func(TP,TN,FP,FN) for TP,TN,FP,FN in self.history]
-
-
+    def doAccuracy(self):
+        return [(TP+TN)/(TP+TN+FP+FN) for TP,TN,FP,FN in self.history]
+    def doConfusion(self):
+        class confusion:
+            def __init__(self):
+                self.TP,self.TN,self.FP,self.FN = 0,0,0,0
+            def get_item(self, key:str):
+                if key=='TP': return self.TP
+                if key=='TN': return self.TN
+                if key=='FP': return self.FP
+                if key=='FN': return self.FN
+            def __str__(self):
+                return f"TP={self.TP}, TN={self.TN}, FP={self.FP}, FN={self.FN}"
+        result = confusion()
+        for TP,TN,FP,FN in self.history:
+            result.TP += TP
+            result.TN += TN
+            result.FP += FP
+            result.FN += FN
+        return result
 
 if __name__ == '__main__':
-    test = 2
+    test = 1
     if test == 1:
         print(f'test {test}: load the metric')
         metric = confusionMatrix(['H0','H1'])
@@ -110,6 +133,7 @@ if __name__ == '__main__':
             print(f"true:{true}\t|predicted:{predicted}\t|expected:{expected}")
         print('history:',metric.compute())
         print(metric.compute('acc'))
+        print(metric.compute('confusion'))
     if test == 2:
         import torch
         import numpy as np
@@ -130,3 +154,4 @@ if __name__ == '__main__':
             print(f"true:{true}\t|predicted:{predicted}\t|expected:{expected}")
         print('history:',metric.compute())
         print(metric.compute('acc'))
+        print(metric.compute('confusion'))
