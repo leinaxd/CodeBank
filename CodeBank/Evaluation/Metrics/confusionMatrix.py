@@ -89,19 +89,6 @@ class confusionMatrix:
     def doAccuracy(self):
         return [(TP+TN)/(TP+TN+FP+FN) for TP,TN,FP,FN in self.history]
     def doConfusion(self):
-        # class confusion:
-        #     def __init__(self):
-        #         self.TP,self.TN,self.FP,self.FN = 0,0,0,0
-        #     def get_item(self, key:str):
-        #         if key=='TP': return self.TP
-        #         if key=='TN': return self.TN
-        #         if key=='FP': return self.FP
-        #         if key=='FN': return self.FN
-        #     def __str__(self):
-        #         return f"TP={self.TP}, TN={self.TN}, FP={self.FP}, FN={self.FN}"
-        #     def __iter__(self):
-        #         return self.TP, self.TN, self.FP, self.FN
-        # result = confusion()
         _TP, _TN, _FP, _FN = 0,0,0,0
         for TP,TN,FP,FN in self.history:
             _TP += TP
