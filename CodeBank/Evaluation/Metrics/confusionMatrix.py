@@ -53,8 +53,16 @@ class confusionMatrix:
         if isinstance(predicted, int):  predicted = [predicted]
         if isinstance(true_label, int): true_label = [true_label]
         # if isinstance(true_label)
-        len_predicted = sum(1 for _ in predicted)
-        len_true      = sum(1 for _ in true_label)
+        try: len_predicted = sum(1 for _ in predicted)
+        except TypeError:   
+            predicted = [predicted]
+            len_predicted = 1
+
+        try: len_true      = sum(1 for _ in true_label)
+        except TypeError:
+            true_label = [true_label]
+            len_true = 1
+
         assert len_predicted == len_true, f"predicted and true_label missmatched in size"
 
         #be careful, positive means H0 and negative means H1, 
@@ -98,7 +106,9 @@ class confusionMatrix:
         return namedtuple('confusion',('TP','TN','FP','FN'))(_TP,_TN,_FP,_FN)
 
 if __name__ == '__main__':
-    test = 1
+    import torch
+    import numpy as np
+    test = 2
     if test == 1:
         print(f'test {test}: load the metric')
         metric = confusionMatrix(['H0','H1'])
@@ -125,23 +135,27 @@ if __name__ == '__main__':
         print(metric.compute('acc'))
         print(metric.compute('confusion'))
     if test == 2:
-        import torch
-        import numpy as np
         print(f'test {test}: numpy/torch compatibility')
         metric = confusionMatrix(['H0','H1'])
         print(f'(TP,TN,FP,FN)')
         for true, predicted, expected in zip(
             [np.array([0,0,0,0,1,1,1,1]),
-             torch.tensor([0,0,0,0,1,1,1,1])],
+             torch.tensor([0,0,0,0,1,1,1,1]),
+             np.array(1),
+             torch.tensor(0)],
 
             [[0,0,0,0,0,0,0,0],
-             [1,1,1,1,1,1,1,1]],
+             [1,1,1,1,1,1,1,1],
+             0,
+             0],
 
             [[4,0,4,0],
-             [0,4,0,4]]):
+             [0,4,0,4],
+             [0,0,1,0],
+             [1,0,0,0]]):
             metric(predicted,true)
             metric.compute()
-            print(f"true:{true}\t|predicted:{predicted}\t|expected:{expected}")
+            print(f"true:{true}|predicted:{predicted}|expected:{expected}={metric.compute()[-1]}")
         print('history:',metric.compute())
         print(metric.compute('acc'))
         print(metric.compute('confusion'))
