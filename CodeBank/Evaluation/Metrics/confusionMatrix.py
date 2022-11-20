@@ -89,23 +89,26 @@ class confusionMatrix:
     def doAccuracy(self):
         return [(TP+TN)/(TP+TN+FP+FN) for TP,TN,FP,FN in self.history]
     def doConfusion(self):
-        class confusion:
-            def __init__(self):
-                self.TP,self.TN,self.FP,self.FN = 0,0,0,0
-            def get_item(self, key:str):
-                if key=='TP': return self.TP
-                if key=='TN': return self.TN
-                if key=='FP': return self.FP
-                if key=='FN': return self.FN
-            def __str__(self):
-                return f"TP={self.TP}, TN={self.TN}, FP={self.FP}, FN={self.FN}"
-        result = confusion()
+        # class confusion:
+        #     def __init__(self):
+        #         self.TP,self.TN,self.FP,self.FN = 0,0,0,0
+        #     def get_item(self, key:str):
+        #         if key=='TP': return self.TP
+        #         if key=='TN': return self.TN
+        #         if key=='FP': return self.FP
+        #         if key=='FN': return self.FN
+        #     def __str__(self):
+        #         return f"TP={self.TP}, TN={self.TN}, FP={self.FP}, FN={self.FN}"
+        #     def __iter__(self):
+        #         return self.TP, self.TN, self.FP, self.FN
+        # result = confusion()
+        _TP, _TN, _FP, _FN = 0,0,0,0
         for TP,TN,FP,FN in self.history:
-            result.TP += TP
-            result.TN += TN
-            result.FP += FP
-            result.FN += FN
-        return result
+            _TP += TP
+            _TN += TN
+            _FP += FP
+            _FN += FN
+        return namedtuple('confusion',('TP','TN','FP','FN'))(_TP,_TN,_FP,_FN)
 
 if __name__ == '__main__':
     test = 1
@@ -155,3 +158,23 @@ if __name__ == '__main__':
         print('history:',metric.compute())
         print(metric.compute('acc'))
         print(metric.compute('confusion'))
+    if test == 3:
+        print(f'test {test}: confusion matrix')
+        metric = confusionMatrix(['H0','H1'])
+        print(f'(TP,TN,FP,FN)')
+        for true, predicted, expected in zip(
+            [[0,0,0,0,1,1,1,1],
+             [0,0,0,0,1,1,1,1]],
+
+            [[0,0,0,0,0,0,0,0],
+             [1,1,1,1,1,1,1,1]],
+
+            [[4,0,4,0],
+             [0,4,0,4]]):
+            metric(predicted,true)
+            metric.compute()
+            print(f"true:{true}\t|predicted:{predicted}\t|expected:{expected}")
+        print('history:',metric.compute())
+        TP, TN, FP, TN = metric.compute('confusion')
+        print((TP,TN,FP,TN))
+        print( metric.compute('confusion') )
