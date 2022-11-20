@@ -48,11 +48,7 @@ class confusionMatrix:
     def __call__(self, 
         predicted:Union[list,int], 
         true_label:Union[list,int]):
-        #TODO:
-        # if predicted/true_label are a batch of tensors? they do not cast to a list...
-        if isinstance(predicted, int):  predicted = [predicted]
-        if isinstance(true_label, int): true_label = [true_label]
-        # if isinstance(true_label)
+
         try: len_predicted = sum(1 for _ in predicted)
         except TypeError:   
             predicted = [predicted]
