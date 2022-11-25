@@ -21,6 +21,7 @@ class sentenceSplit:
         txt = txt.split(self.delimiter)
         result = []
         s=0
+        if len(txt) <= self.min_len: result.append(' '.join(txt)) #for texts smaller than the window
         while s < len(txt)-self.min_len:
             e = s + self.n_words
             result.append(' '.join(txt[s:e]))
@@ -37,7 +38,8 @@ class sentenceSplit:
 
 
 if __name__ == '__main__':
-    test = 4
+    test = 5
+
     
     if test == 1:
         print(f"test {test} manual overlapping")
@@ -68,6 +70,7 @@ if __name__ == '__main__':
         data['upper4']=out
         print(data.T)
 
+
     if test == 4:
         print(f"test {test}: last split is useless. check the last item isn't already cover by the last but one item\n")
         txt = 'Estaba caminando por el parque hasta que me encontré un cachorrito, era tan tierno que me lo llevé a mi casa. He notado que este cachorrito tenía dueño y era justamente de aquella persona que andaba persiguiendo aquel día.'
@@ -76,3 +79,15 @@ if __name__ == '__main__':
             splitter = sentenceSplit(4,o)
             out = splitter(txt)
             print(out,'\n')
+
+    if test == 5:
+        print(f"test {test}: fewer strings than splits\n{'='*50}")
+        txt = 'A B C D E F G H I J'
+        n_words = 20
+        overlap = 0.5
+        splitter = sentenceSplit(n_words,overlap)
+        out = splitter(txt)
+        print(f"Params:\n\tn_words:{n_words}\n\toverlap:{overlap}")
+        print(f"INPUT:\n\t{txt}\n\tlen={len(txt.split(' '))}")
+        print(f"OUTPUT:\n\t{out}")
+        print(f"{'='*50}\nEXPECTED:\n\t{txt}")
