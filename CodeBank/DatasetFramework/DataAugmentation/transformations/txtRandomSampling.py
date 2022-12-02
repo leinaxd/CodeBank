@@ -3,6 +3,7 @@ from nltk.tokenize import word_tokenize
 import numpy as np
 import pandas as pd
 
+nltk.download('punkt')
 class txtRandomSampling:
     """
     Samples the corpus and place the "[MASK]" token with probability p
