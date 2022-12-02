@@ -36,7 +36,7 @@ class choices:
         out = np.empty(data.shape[0])
         for i, row in enumerate(data):
             out[i] = np.random.choice(len(row), p=row)
-        if self.isTorch: out = torch.tensor(out)
+        if self.isTorch: out = torch.tensor(out,dtype=torch.LongTensor)
         return out
 
 if __name__ == '__main__':

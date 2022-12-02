@@ -15,7 +15,7 @@ class txtRandomSampling:
     def __init__(self, prob:float, maskToken:str,return_ix=False):
         self.prob = prob
         self.maskToken = maskToken
-        self.return_ix = True
+        self.return_ix = return_ix
     def doTxt(self, corpus:str):
         words = word_tokenize(corpus)
         ix = np.random.binomial(1,self.prob,len(words))
