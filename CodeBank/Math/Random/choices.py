@@ -13,9 +13,12 @@ class choices:
         assert dim ==-1, f"dim is not implemented"
         self.dim = dim
         self.norm = norm
+        self.isTorch=False
 
     def normalizeProbs(self, data:torch.Tensor):
-        if isinstance(data,torch.Tensor): data = data.detach().numpy()
+        if isinstance(data,torch.Tensor): 
+            self.isTorch=True
+            data = data.detach().numpy()
         if self.norm.lower() in ['linear', 'l']:
             data = data/np.sum(data,-1,keepdims=True)
         if self.norm.lower() in ['softmax', 's']:
@@ -33,6 +36,7 @@ class choices:
         out = np.empty(data.shape[0])
         for i, row in enumerate(data):
             out[i] = np.random.choice(len(row), p=row)
+        if self.isTorch: out = torch.tensor(out)
         return out
 
 if __name__ == '__main__':
