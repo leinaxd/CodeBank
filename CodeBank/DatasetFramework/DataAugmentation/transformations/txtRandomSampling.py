@@ -3,13 +3,13 @@ from nltk.tokenize import word_tokenize
 import numpy as np
 import pandas as pd
 
-nltk.download('punkt')
 class txtRandomSampling:
     """
     Samples the corpus and place the "[MASK]" token with probability p
 
     <prob> probability of mask a word
     """
+    nltk.download('punkt')
     def __init__(self, prob:float, maskToken:str):
         self.prob = prob
         self.maskToken = maskToken
