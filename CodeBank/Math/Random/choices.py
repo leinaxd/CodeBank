@@ -10,11 +10,12 @@ class choices:
             softmax [s]
     """
     def __init__(self, norm='linear', dim=-1):
+        assert dim ==-1, f"dim is not implemented"
         self.dim = dim
         self.norm = norm
 
     def normalizeProbs(self, data:torch.Tensor):
-        if isinstance(data,torch.Tensor): data = data.numpy()
+        if isinstance(data,torch.Tensor): data = data.detach().numpy()
         if self.norm.lower() in ['linear', 'l']:
             data = data/np.sum(data,-1,keepdims=True)
         if self.norm.lower() in ['softmax', 's']:
