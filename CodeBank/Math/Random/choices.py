@@ -3,6 +3,10 @@ import numpy as np
 
 class choices:
     """
+    DEPRECATED:
+       SEE TORCH.MULTINOMIAL
+
+       
         Return the index given a matrix of probability
 
         normalization implemented:
@@ -13,34 +17,49 @@ class choices:
         assert dim ==-1, f"dim is not implemented"
         self.dim = dim
         self.norm = norm
-        self.isTorch=False
 
+        self.sumFunc = None
+        self.expFunc = None
+        self.choiceFunc = None
+        self.emptyFunc = None
+
+    def detectFramework(self, data):
+        if isinstance(data, np.ndarray):
+            self.sumFunc = np.sum
+            self.expFunc = np.exp
+            self.choiceFunc = lambda x: np.random.choice(len(data), p=data)
+            self.emptyFunc = np.empty
+        if isinstance(data, torch.Tensor):
+            self.sumFunc = torch.sum
+            self.expFunc = torch.exp
+            self.choiceFunc = lambda x: torch.multinomial(x, num_samples=1)
+            self.emptyFunc = torch.empty
+    
     def normalizeProbs(self, data:torch.Tensor):
-        if isinstance(data,torch.Tensor): 
-            self.isTorch=True
-            data = data.detach().numpy()
         if self.norm.lower() in ['linear', 'l']:
-            data = data/np.sum(data,-1,keepdims=True)
+            data = data/self.sumFunc(data,-1,keepdims=True)
         if self.norm.lower() in ['softmax', 's']:
-            data = np.exp(data)
-            data = data/np.sum(data,-1,keepdims=True)
+            data = self.expFunc(data)
+            data = data/self.sumFunc(data,-1,keepdims=True)
         return data
 
-    def __call__(self, data:np.ndarray):
-        assert len(data.shape) <= 2, f"Not implemented for len(data.shape) > 2"
 
+    def __call__(self, data):
+        assert len(data.shape) <= 2, f"Not implemented for len(data.shape) > 2"
+        self.detectFramework(data)
         data = self.normalizeProbs(data)
-        if len(data.shape) == 1: return np.random.choice(len(data), p=data)
+
+        if len(data.shape) == 1: return self.choiceFunc(data)
         
 
-        out = np.empty(data.shape[0])
+        out = self.emptyFunc(data.shape[0])
         for i, row in enumerate(data):
-            out[i] = np.random.choice(len(row), p=row)
-        if self.isTorch: out = torch.tensor(out,dtype=int)
+            out[i] = self.choiceFunc(row)
+
         return out
 
 if __name__ == '__main__':
-    test = 4
+    test = 2
     if test == 1:
         print(f"test {test}: single array\n")
         sampling = choices()
@@ -70,3 +89,7 @@ if __name__ == '__main__':
         print(f"data:\n{data}")
         for i in range(10):
             print(f"result:\n{sampling(data)}")
+    if test == 5:
+        data = torch.tensor([[0.1,0.1,0.7,0.1],[1,1,0,5]])
+        print(data)
+        print(data.multinomial(20,replacement=True))

@@ -4,7 +4,7 @@ import pandas as pd
 from transformers import AutoModelForMaskedLM, AutoTokenizer
 from transformers import logging
 from CodeBank.DatasetFramework.DataAugmentation.transformations import txtRandomSampling
-from CodeBank.Math.Random import choices
+# from CodeBank.Math.Random import choices
 
 
 class txtAugmentation:
@@ -18,7 +18,7 @@ class txtAugmentation:
    Possible BUG:
       que las probabilidades de la transformacion esten entre 0 y 1
     """
-    def __init__(self, path:str, transformation:dict, verbose=False):
+    def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
         logging.set_verbosity_error() #Ignore unused weights warning. (this model is for finetunning)
         self.model = AutoModelForMaskedLM.from_pretrained(path)
@@ -27,10 +27,11 @@ class txtAugmentation:
         logging.set_verbosity_warning()
         self.tokenizer = AutoTokenizer.from_pretrained(path)
         self.sampling = txtRandomSampling(transformation['synonyms'], maskToken=self.tokenizer.mask_token)
-        self.selection = choices('softmax')
+        # self.selection = choices('softmax')
         self.verbose=verbose
         self.count  = 0
         self.max_length=512
+        self.doSoftmax=doSoftmax
     # def __init__(self, transformations:dict, HuggingFaceLM:str, maskToken:str):
 
     #     self.sampling = txtRandomSampling(transformations['synonyms'], maskToken)
@@ -45,13 +46,16 @@ class txtAugmentation:
         input = {k:v.to(self.device) for k, v in input.items()}
 
         input_ids = input['input_ids'][0] #ignore batching dim
-        masked_ix = torch.where(input_ids == self.tokenizer.mask_token_id)
+        masked_ix, = torch.where(input_ids == self.tokenizer.mask_token_id)
 
         self.model.eval()
         predictions = self.model(**input).logits
 
-        for ix in masked_ix:
-            predicted_token = self.selection(predictions[0,ix])
+        for ix in masked_ix.tolist():
+            # predicted_token = self.selection(predictions[0,ix])
+            mask_prob = predictions[0,ix]
+            if self.doSoftmax: mask_prob = torch.nn.functional.softmax(mask_prob, dim=-1)
+            predicted_token = torch.multinomial(mask_prob, 1)
             input_ids[ix] = predicted_token
 
         tokens = self.tokenizer.convert_ids_to_tokens(input_ids[1:-1])
