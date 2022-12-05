@@ -131,8 +131,9 @@ class txtAugmentation:
 
 
     """
-    def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False):
+    def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False, sleep=0):
         self.transformation = {'synonyms':0,'srcLang':None,'tgtLang':None} #default Values
+        self.sleep=sleep
         self.transformation.update(transformation)
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
@@ -181,7 +182,7 @@ class txtAugmentation:
         return txt
 
     def doBackTranslation(self, txt:str):
-        txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'])
+        txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=self.sleep)
         return txt.result_text
 
 
@@ -189,7 +190,7 @@ class txtAugmentation:
         out = []
         for sample in data:
             if self.transformation['synonyms']: sample = self.doSynonyms(sample)
-            if self.transformation['tgtLang']:     sample = self.doBackTranslation(sample)
+            if self.transformation['tgtLang']:  sample = self.doBackTranslation(sample)
 
             out.append(sample)
         return pd.Series(out)
