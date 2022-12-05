@@ -132,7 +132,7 @@ class txtAugmentation:
 
     """
     def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False):
-        self.transformation = {'synonyms':0,'lang':None} #default Values
+        self.transformation = {'synonyms':0,'srcLang':None,'tgtLang':None} #default Values
         self.transformation.update(transformation)
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
@@ -181,7 +181,7 @@ class txtAugmentation:
         return txt
 
     def doBackTranslation(self, txt:str):
-        txt = self.translator.translate(txt, tmp=self.transformation['lang'])
+        txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'])
         return txt.result_text
 
 
