@@ -132,7 +132,8 @@ class txtAugmentation:
 
     """
     def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False):
-        self.transformation = {'synonyms':0,'lang':None}.update(transformation)
+        self.transformation = {'synonyms':0,'lang':None} #default Values
+        self.transformation.update(transformation)
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
         logging.set_verbosity_error() #Ignore unused weights warning. (this model is for finetunning)
