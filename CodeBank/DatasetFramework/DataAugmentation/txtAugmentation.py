@@ -189,19 +189,26 @@ class txtAugmentation:
         out = []
         for sample in data:
             if self.transformation['synonyms']: sample = self.doSynonyms(sample)
-            if self.transformation['lang']:     sample = self.doBackTranslation(sample)
+            if self.transformation['tgtLang']:     sample = self.doBackTranslation(sample)
 
             out.append(sample)
         return pd.Series(out)
 
 
 if __name__ =='__main__':
-    path='BETO/'
-    data=pd.DataFrame({'src':['Hola este es un nuevo día','Unidad anatómica fundamental de todos los organismos vivos, generalmente microscópica, formada por citoplasma, uno o más núcleos y una membrana que la rodea']})
-    transformation={'synonyms':0.1}
-    augmentation = txtAugmentation(path,transformation)
+    test = 1
+    if test == 1:
+        path='BETO/'
+        data=pd.DataFrame({'src':['Hola este es un nuevo día','Unidad anatómica fundamental de todos los organismos vivos, generalmente microscópica, formada por citoplasma, uno o más núcleos y una membrana que la rodea']})
+        transformation={'synonyms':0.1}
+        augmentation = txtAugmentation(path,transformation)
 
-    out = augmentation(data['src'])
-    print(out[0])
-    print(out[1])
+        out = augmentation(data['src'])
+        print(out[0])
+        print(out[1])
 
+    if test == 2:
+        from BackTranslation import BackTranslation
+        A = BackTranslation()
+        q = A.translate('hola cómo estás hoy?', src='es',tmp='zh-cn')
+        q.result_text
