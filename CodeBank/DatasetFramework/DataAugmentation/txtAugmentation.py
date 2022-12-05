@@ -182,7 +182,7 @@ class txtAugmentation:
 
     def doBackTranslation(self, txt:str):
         txt = self.translator.translate(txt, tmp=self.transformation['lang'])
-        return txt.result
+        return txt.result_text
 
 
     def __call__(self, data:pd.Series):
