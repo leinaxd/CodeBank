@@ -4,14 +4,18 @@ import pandas as pd
 from transformers import AutoModelForMaskedLM, AutoTokenizer
 from transformers import logging
 from CodeBank.DatasetFramework.DataAugmentation.transformations import txtRandomSampling
+
+from BackTranslation import BackTranslation
 # from CodeBank.Math.Random import choices
 
 
 class txtAugmentation:
     """
-    
+    !pip install BackTranslation
     transformations: Dict[type:str, prob:float]
-        -synonyms
+        - synonyms
+        - BackTranslation: language
+            chinese, english, spanish
 
     <HuggingFaceLM>: Callable [string with [mask]-> string]
 
@@ -19,6 +23,8 @@ class txtAugmentation:
       que las probabilidades de la transformacion esten entre 0 y 1
     """
     def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False):
+        self.transformation = {'synonyms':0,'lang':None}.update(transformation)
+
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
         logging.set_verbosity_error() #Ignore unused weights warning. (this model is for finetunning)
         self.model = AutoModelForMaskedLM.from_pretrained(path)
@@ -26,12 +32,14 @@ class txtAugmentation:
         # self.model.config.max_position_embeddings = 512
         logging.set_verbosity_warning()
         self.tokenizer = AutoTokenizer.from_pretrained(path)
-        self.sampling = txtRandomSampling(transformation['synonyms'], maskToken=self.tokenizer.mask_token)
+        self.sampling = txtRandomSampling(self.transformation['synonyms'], maskToken=self.tokenizer.mask_token)
         # self.selection = choices('softmax')
         self.verbose=verbose
         self.count  = 0
         self.max_length=512
         self.doSoftmax=doSoftmax
+
+        self.translator = BackTranslation()
     # def __init__(self, transformations:dict, HuggingFaceLM:str, maskToken:str):
 
     #     self.sampling = txtRandomSampling(transformations['synonyms'], maskToken)
@@ -62,11 +70,20 @@ class txtAugmentation:
         txt = self.tokenizer.convert_tokens_to_string(tokens)
         return txt
 
+    def doBackTranslation(self, txt:str):
+        txt = self.translator.translate(txt, tmp=self.transformation['lang'])
+        return txt
+
+
     def __call__(self, data:pd.Series):
         out = []
         for sample in data:
-            out.append( self.doSynonyms(sample) )
+            if self.transformation['synonyms']: sample = self.doSynonyms(sample)
+            if self.transformation['lang']:     sample = self.doBackTranslation(sample)
+
+            out.append(sample)
         return pd.Series(out)
+
 
 if __name__ =='__main__':
     path='BETO/'
