@@ -141,6 +141,8 @@ class txtAugmentation:
         # self.model.config.max_position_embeddings = 512
         logging.set_verbosity_warning()
         self.tokenizer = AutoTokenizer.from_pretrained(path)
+        print(self.transformation)
+        print(self.tokenizer.mask_token)
         self.sampling = txtRandomSampling(self.transformation['synonyms'], maskToken=self.tokenizer.mask_token)
         # self.selection = choices('softmax')
         self.verbose=verbose
