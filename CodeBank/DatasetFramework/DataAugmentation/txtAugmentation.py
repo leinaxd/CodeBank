@@ -104,11 +104,13 @@ class txtAugmentation:
             txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
         except:
             sleep +=6
+            print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
             time.sleep(sleep)
             try:
                txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
             except:
                 sleep *=10
+                print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
                 time.sleep(sleep)
                 try:
                     txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
