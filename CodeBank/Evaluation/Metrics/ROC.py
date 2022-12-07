@@ -32,9 +32,8 @@ class ROC:
     TODO:
         H0_region: could be a list of intervals where H0 holds true for classification
     """
-    def __init__(self, H0_region_start:int=0, H0_region_end:int=1, nSteps:int=10):
+    def __init__(self):
         self.history = [] #list of H0 tuples [(prob_0, true_label), ...]
-        self.H0_region = (H0_region_start, H0_region_end, nSteps)
     def load_state(self, history:list):
         self.history = history
     def save_state(self) -> list:
@@ -68,11 +67,11 @@ class ROC:
         if type.lower() in [None,'']:
             return self.history
         elif type.lower() in ['roc','r']:
-            return self.doROC()
+            return self.doROC(*args)
         elif type.lower() in ['confusion','c']:
             return self.doConfusion(*args)
         elif type.lower() in ['auc','a']:
-            return self.doAUC()
+            return self.doAUC(*args)
         else:
             raise NotImplementedError(f"{type} is not implemented yet")
 
@@ -95,13 +94,27 @@ class ROC:
                 FN += 1 
         return namedtuple('confusion',('TP','TN','FP','FN'))(TP,TN,FP,FN)
 
-    def doAUC(self):
-        # TP,TN,FP,FN = self.doConfusion()
-        # return [(TP+TN)/(TP+TN+FP+FN) for TP,TN,FP,FN in self.history]
-        raise NotImplementedError
-    def doROC(self):
+    def doAUC(self, *args):
+        # SOURCES
+        thresholds, confusion = self.doROC(*args)
+        x = []
+        y = []
+        for (TP,TN,FP,FN) in confusion:
+            TPR = TP/(TP+FN) if TP+FN else 0
+            FPR = FP/(FP+TN) if FP+TN else 0
+            x.append( FPR )
+            y.append( TPR )
+        #sort by x in order to integrate the area under the curve
+        x, y = np.array(x), np.array(y)
+        ix = np.argsort(x)
+        x = x[ix]
+        y = y[ix]
+        return np.trapz(y,x) #AUC
+
+    def doROC(self, H0_region_start:int=0, H0_region_end:int=1, nSteps:int=10):
         result = []
-        thresholds = np.arange(*self.H0_region)
+        step = (H0_region_end-H0_region_start)/nSteps
+        thresholds = np.arange(H0_region_start, H0_region_end+step, step)
         for th in thresholds:
             result.append(self.doConfusion(th))
         return thresholds, result
@@ -110,21 +123,56 @@ class ROC:
 if __name__ == '__main__':
     import torch
     import numpy as np
-    test = 1
+    test = 2
     if test == 1:
-        print(f'test {test}: classify for ROC')
+        print(f'test {test}: classify for confusion Matrix')
         threshold = 0.5
         experiments = [0.68, 0.4, 0.3, 0.9, 0.1] #0 = H0, 1=H1
         pred        = [   0,   1,   1,   0,   1] #0 = H0, 1=H1
-        true        = [   1,   1,   0,   1,   0]
+        true        = [   0,   1,   0,   0,   0]
         # experiments > 0.5 #predicted = 0, true = 1
-        expected    = [0,1,2,2]
-        metric = ROC(0,1,10)
+        expected    = [2,1,0,2]
+        metric = ROC()
         metric(prob_0=experiments, true_label=true)
         confusionMatrix = metric.compute('c',threshold)
         print(f"experiments:\t{experiments}\npredicted:\t{pred}\ntrue_label:\t{true}\n{'='*50}\nobtained:\t{confusionMatrix}\nexpected:\t{expected}")
         print(f"history:\n\t{metric.compute()}")
+
     if test == 2:
+        print(f'test {test}: classify for ROC')
+        experiments = [0.68, 0.4, 0.3, 0.9, 0.1, 0.6, 0.7, 0.3, 0.2, 0.16, 0.47,0.53,0.18,0.87] #0 = H0, 1=H1
+        experiments *= 1
+        pred        = [   0,   1,   1,   0,   1,   0,   0,   1,   1,    1,    1,   0,   1,   0]*1
+
+        true = np.random.randint(0,2,len(experiments))
+        true = pred
+        # experiments > 0.5 #predicted = 0, true = 1
+        expected    = [0,1,2,2]
+        metric = ROC()
+        metric(prob_0=experiments, true_label=true)
+        print(f"exp:{experiments}\ntrue:{true}")
+        th, roc_curve = metric.compute('r',0,1,10)
+        x = []
+        y = []
+        for (TP,TN,FP,FN) in roc_curve:
+            TPR = TP/(TP+FN) if TP+FN else 0
+            FPR = FP/(FP+TN) if FP+TN else 0
+            x.append( FPR )
+            y.append( TPR )
+            print([TP,TN,FP,FN], TPR, FPR)
+        ix = np.argsort(np.array(x))
+        x = np.array(x)[ix]
+        y = np.array(y)[ix]
+        import matplotlib.pyplot as plt
+        plt.style.use('dark_background')
+        plt.plot(x,y,'o-')
+        plt.xlabel('FPR')
+        plt.ylabel('TPR')
+        print(f"Area under curve={metric.compute('auc',0,1,10)}")
+        plt.show()
+
+
+    if test == 3:
         print(f'test {test}: load the metric')
         metric = ROC()
         print(f'(TP,TN,FP,FN)')
