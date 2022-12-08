@@ -100,9 +100,9 @@ if __name__ == '__main__':
         print(f"test {test}")
         hist = histogram(10)
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
-        hist(ax1, data_g, fill=True)
-        hist(ax2, data_u, fill=True)
-        hist(ax3, data_g, fill=False)
-        hist(ax4, data_u, fill=False)
+        hist(ax1, data_g, histtype='bar')
+        hist(ax2, data_u, histtype='bar')
+        hist(ax3, data_g, histtype='step')
+        hist(ax4, data_u, histtype='step')
 
         plt.show()
