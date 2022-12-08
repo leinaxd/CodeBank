@@ -35,9 +35,10 @@ class histogram:
         data:np.ndarray,
         histtype='bar', #do barPlot or contour plot
         barWidth_pcn=0.95,
+        bandwidth=1.
         ):
         if histtype.lower() in ['gaussian','tophat','epanechnikov','exponential','linear','cosine']: 
-            return self.doKDE(ax, data, histtype)
+            return self.doKDE(ax, data, histtype, bandwidth)
         if histtype.lower() in ['bar']: 
             return self.doBar(ax, data, histtype)
         if histtype.lower() in ['step']:
@@ -96,9 +97,8 @@ class histogram:
         # ax.set_yticks(ticks)
         return list(bins.values()), list(bins.keys()), lines #probs, x_axis, patches
     
-    def doKDE(self, ax:plt.Axes, data:np.ndarray, histtype:str):
-        bandwidth = 1/self.nBins
-        bandwidth = 1
+    def doKDE(self, ax:plt.Axes, data:np.ndarray, histtype:str, bandwidth:float):
+        # bandwidth = 1/self.nBins
         
         x_axis = np.linspace(min(data),max(data),10*self.nBins)[:,np.newaxis]
         if isinstance(data, list): data = np.array(data)
