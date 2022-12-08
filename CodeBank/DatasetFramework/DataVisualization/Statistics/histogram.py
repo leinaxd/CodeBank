@@ -66,12 +66,12 @@ class histogram:
         return bins, binWidth
 
     def doBar(self, ax:plt.Axes, data:np.ndarray, histtype:str):
-        # if 'color' not in self.plot_args:
-        #     color = ax._get_lines.get_next_color()
-        #     self.plot_args.update(color = color)
+        if 'color' not in self.plot_args:
+            color = ax._get_lines.get_next_color()
+            self.plot_args.update(color = color)
         barWidth_pcn = 0.95
         bins, binWidth = self.doBins(data)
-        lines = ax.bar(bins.keys(),bins.values(),width=binWidth*barWidth_pcn)
+        lines = ax.bar(bins.keys(),bins.values(),width=binWidth*barWidth_pcn, color=color)
         return list(bins.values()), list(bins.keys()), lines #probs, x_axis, patches
 
     def doStep(self, ax:plt.Axes, data:np.ndarray, histtype:str):
@@ -101,6 +101,7 @@ class histogram:
         bandwidth = 1
         
         x_axis = np.linspace(min(data),max(data),10*self.nBins)[:,np.newaxis]
+        if isinstance(data, list): data = np.array(data)
         if len(data.shape) == 1: data = data[:,np.newaxis]
         kde     = KernelDensity(kernel=histtype,bandwidth=bandwidth).fit(data)
         logProb = kde.score_samples(x_axis)
