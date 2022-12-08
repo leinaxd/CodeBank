@@ -111,10 +111,10 @@ class ROC:
         y = y[ix]
         return np.trapz(y,x) #AUC
 
-    def doROC(self, H0_region_start:int=0, H0_region_end:int=1, nSteps:int=10):
+    def doROC(self, nSteps:int=10):
         result = []
-        step = (H0_region_end-H0_region_start)/nSteps
-        thresholds = np.arange(H0_region_start, H0_region_end+step, step)
+        step = 1./nSteps
+        thresholds = np.arange(0, 1+step, step)
         for th in thresholds:
             result.append(self.doConfusion(th))
         return thresholds, result
@@ -151,7 +151,7 @@ if __name__ == '__main__':
         metric = ROC()
         metric(prob_0=experiments, true_label=true)
         print(f"exp:{experiments}\ntrue:{true}")
-        th, roc_curve = metric.compute('r',0,1,10)
+        th, roc_curve = metric.compute('r',10)
         x = []
         y = []
         for (TP,TN,FP,FN) in roc_curve:
@@ -168,7 +168,7 @@ if __name__ == '__main__':
         plt.plot(x,y,'o-')
         plt.xlabel('FPR')
         plt.ylabel('TPR')
-        print(f"Area under curve={metric.compute('auc',0,1,10)}")
+        print(f"Area under curve={metric.compute('auc',10)}")
         plt.show()
 
 
