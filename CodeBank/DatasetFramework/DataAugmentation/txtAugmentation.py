@@ -53,21 +53,23 @@ class txtAugmentation:
         self.sleep=sleep
         self.transformation.update(transformation)
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
-        logging.set_verbosity_error() #Ignore unused weights warning. (this model is for finetunning)
-        self.model = AutoModelForMaskedLM.from_pretrained(path)
-        self.model.to(self.device)
-        # self.model.config.max_position_embeddings = 512
-        logging.set_verbosity_warning()
-        self.tokenizer = AutoTokenizer.from_pretrained(path)
-        self.sampling = txtRandomSampling(self.transformation['synonyms'], maskToken=self.tokenizer.mask_token)
+        if self.transformation['synonyms']:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
+            logging.set_verbosity_error() #Ignore unused weights warning. (this model is for finetunning)
+            self.model = AutoModelForMaskedLM.from_pretrained(path)
+            logging.set_verbosity_warning()
+            self.model.to(self.device)
+            # self.model.config.max_position_embeddings = 512
+            self.tokenizer = AutoTokenizer.from_pretrained(path)
+            self.sampling = txtRandomSampling(self.transformation['synonyms'], maskToken=self.tokenizer.mask_token)
         # self.selection = choices('softmax')
         self.verbose=verbose
         self.count  = 0
         self.max_length=512
         self.doSoftmax=doSoftmax
 
-        self.translator = BackTranslation()
+        if self.transformation['tgtLang']:
+            self.translator = BackTranslation()
     # def __init__(self, transformations:dict, HuggingFaceLM:str, maskToken:str):
 
     #     self.sampling = txtRandomSampling(transformations['synonyms'], maskToken)
