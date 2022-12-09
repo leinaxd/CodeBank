@@ -1,3 +1,5 @@
+#TODO:
+# DEPRECATED, USE classificationMetric instead
 from typing import Union, Sequence
 from collections import namedtuple
 

@@ -12,15 +12,21 @@ class yourFunction:
     """
     def __init__(self, *args,**kwargs):
         """
-        DEFINITION:
-            Here you select/initialize parameters and hyperparameters which will define yourFunction Behaviour
+        DEFINE THE STATIC BEHAVIOUR:
+            Here you initialize your fixed parameters, or select a fixed functionality
         """
     def __call__(self, *args, **kwargs):
         """
-        Execution:
-            Here is where you apply/do yourFunction funcionality
+        DEFINE THE DYNAMIC BEHAVIOUR:
+            Here you choose editable parameters, or select some functionality on-demand
+        """
+    def method(self):
+        """
+        EXECUTION:
+            Here you query the model with custom funcionality
         """
 ```
+
 
 # Graph aided Software Analysis
 

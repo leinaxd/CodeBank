@@ -1,1 +1,2 @@
 from .confusionMatrix import confusionMatrix
+from .classificationMetric import classificationMetric
