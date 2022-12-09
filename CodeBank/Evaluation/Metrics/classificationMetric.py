@@ -131,7 +131,7 @@ class classificationMetric:
         )-> metric_1(roc_curve) , metric_2(roc_curve)
             returns the sequence of metrics
         """
-        if isinstance(type, str): metrics = [metrics]
+        if isinstance(metrics, str): metrics = [metrics]
         if isinstance(roc_curve[0], tuple): #stem
             return [[self._compute(*confusion, metric) for confusion in roc_curve] for metric in metrics]
         #groupByExperiments
