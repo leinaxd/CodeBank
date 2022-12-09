@@ -100,27 +100,65 @@ class classificationMetric:
 
     def compute(self, 
         roc_curve:Union[Tuple[int,int,int,int],List[Tuple[int,int,int,int]]], 
-        metrics:  Union[str, List[str]]
+        metrics:  Union[str, List[str]],
         )-> List[List[float]]:
         """
-        Given a Sequence of confusion Matrix it return the given metrics
-        <types>:
-            ACC: Accuracy
-            FPR: False Positive Rate
-            TPR: True Positive Rate
+        Given a Sequence of confusion Matrix it computes the requested metrics
+        Notation:
+            hx: predicted 
+            Hx: True
+        <metrics>:
+            P:   TP/(TP+TN+FP+FN)              Prevalence                                       P(h0)
+            ACC: (TP+TN)/(TP+TN+FP+FN)         Accuracy                                         P(hx=Hx)
+            BA:  (TPR+TNR)/2                   Balanced Accuracy 
+            F1:  [0.5*([TPR^-1]+[PPV^-1])]^-1  F1 score
+            TPR: TP/(TP+FN)                    True Positive Rate (sensitivity, recall)         P(h0|H0)
+            TNR: TN/(TN+FP)                    True Negative Rate (specificity, selectivity)    P(h1|H1)
+            PPV: TP/(TP+FP)                    Positive Predicted Value (precision)             P(H0|h0)
+            NPV: TN/(TN+FN)                    Negative Predicted Value                         P(H1|h1)
+            FNR: FN/(TP+FN)                    False Negative Rate (miss rate, Error I*)        P(h1|H0)
+            FPR: FP/(TN+FP)                    False Positive Rate (fall out, Error II*)        P(h0|H1)
+            FDR: FP/(TP+FP)                    False Discovery Rate                             P(H1|h0)
+            FOR: FN/(TN+FN)                    False Omission Rate                              P(H0|h1)
+            LR+: TPR/FPR                       Positive Likelihood Ratio                        P(h0|H0)/P(h0|H1)
+            LR-: FNR/TNR                       Negative Likelihood Ratio                        P(h1|H0)/P(h1|H1)
+            TS:  TP/(TP+FN+FP)                 Threat Score (critical success index [CSI])      P(h0=H0|h1!=H1)
+            PT:  sqrt(FPR)/sqrt(TPR)+sqrt(FPR) Prevalence Threshold
+            *warning, if the H0 is reject H0, then the Type Errors swaps.
+        <sort>:
+            usefull for plotting or for computing AUC,
+            however it miss shift the thresholds values
         )-> metric_1(roc_curve) , metric_2(roc_curve)
             returns the sequence of metrics
         """
-        if len(roc_curve) != 1: roc_curve = [roc_curve]
         if isinstance(type, str): metrics = [metrics]
-        print(roc_curve)
-        return [[self._compute(*confusion, metric) for confusion in roc_curve] for metric in metrics]
-
+        if isinstance(roc_curve[0], tuple): #stem
+            return [[self._compute(*confusion, metric) for confusion in roc_curve] for metric in metrics]
+        #groupByExperiments
+        return [[[self._compute(*confusion, metric) for confusion in exp] for metric in metrics] for exp in roc_curve]
 
     def _compute(self, TP,TN,FP,FN, metric:str):
-        if metric == 'TPR': return TP/(TP+FN) if TP+FN else 0
-        if metric == 'FPR': return FP/(FP+TN) if FP+TN else 0
+        metric = metric.upper()
+        if metric == 'P':   return TP/(TP+TN+FP+FN)      if TP+TN+FP+FN else 0
         if metric == 'ACC': return (TP+TN)/(TP+TN+FP+FN) if TP+TN+FP+FN else 0
+        if metric == 'BA':  return (self._compute(TP,TN,FP,FN,'TPR')+self._compute(TP,TN,FP,FN,'TNR'))/2
+        if metric == 'F1':  return 2*TP/(2*TP+FP+FN) if 2*TP+FP+FN else 0
+        if metric == 'TPR': return TP/(TP+FN) if TP+FN else 0
+        if metric == 'TNR': return TN/(TN+FP) if TN+FP else 0
+        if metric == 'PPV': return TP/(TP+FP) if TP+FP else 0
+        if metric == 'NPV': return TN/(TN+FN) if TN+FN else 0
+        if metric == 'FNR': return FN/(TP+FN) if TP+FN else 0
+        if metric == 'FPR': return FP/(TN+FP) if TN+FP else 0
+        if metric == 'FDR': return FP/(TP+FP) if TP+FP else 0
+        if metric == 'FOR': return FN/(TN+FN) if TN+FN else 0
+        if metric == 'LR+': return self._compute(TP,TN,FP,FN,'TPR')/self._compute(TP,TN,FP,FN,'FPR')
+        if metric == 'LR-': return self._compute(TP,TN,FP,FN,'FNR')/self._compute(TP,TN,FP,FN,'TNR')
+        if metric == 'TS':  return TP/(TP+FN+FP) if TP+FN+FP else 0
+        if metric == 'PT':  
+            num = np.sqrt(self._compute(TP,TN,FP,FN,'FPR'))
+            den = num + np.sqrt(self._compute(TP,TN,FP,FN,'TPR'))
+            return num/den if den else 0
+        
 
 
 
@@ -171,14 +209,22 @@ class classificationMetric:
                 FN += 1 
         return (TP,TN,FP,FN)
 
-    def doAUC(self, x:List[float], y:List[float],sorted=True):#data:List[Tuple[int,int]]):
-        """<sorted> is required to avoid negative areas"""
-        x, y = np.array(x), np.array(y)
+    def doAUC(self, x:List[float], y:List[float], thresholds:List[float], sorted=True):#data:List[Tuple[int,int]]):
+        """<sorted> is required to avoid computing negative areas
+        )-> AUC, sorted[x],sorted[y]
+        return:
+            The <AUC> score
+            <x>, <y>, <thresholds> is useful for plotting
+        """
+        x = np.array(x) if isinstance(x, list) else x
+        y = np.array(y) if isinstance(y, list) else y
+        th = np.array(thresholds) if isinstance(thresholds, list) else thresholds
         if sorted: 
             ix = np.argsort(x)
-            x = x[ix]
-            y = y[ix]
-        return np.trapz(y,x) #AUC
+            x =  x[ix]
+            y =  y[ix]
+            th = th[ix]
+        return np.trapz(y,x), x, y, th #AUC
 
 
 
@@ -202,35 +248,31 @@ if __name__ == '__main__':
     if test == 2:
         print(f'test {test}: classify for ROC')
         experiments = [0.68, 0.4, 0.3, 0.9, 0.1, 0.6, 0.7, 0.3, 0.2, 0.16, 0.47,0.53,0.18,0.87] #0 = H0, 1=H1
-        experiments *= 1
-        pred        = [   1,   0,   0,   1,   0,   1,   1,   0,   0,    0,    0,   1,   0,   1]*1
+        experiments *= 1000
+        true        = [   1,   0,   0,   1,   0,   1,   1,   0,   0,    0,    0,   1,   0,   1]*1
 
         true = np.random.randint(0,2,len(experiments))
-        # true = pred
 
         expected    = [0,1,2,2]
         metric = classificationMetric()
         metric(prob_1=experiments, true_label=true)
-        print(f"exp:{experiments}\ntrue:{true}")
         th, roc_curve = metric.doROC(nSteps=10, groupByExperiments=False)
-        x, y = metric.compute(roc_curve, ['FPR','TPR'])
-        # x = []
-        # y = []
-        # for (TP,TN,FP,FN) in roc_curve:
-            # TPR = TP/(TP+FN) if TP+FN else 0
-            # FPR = FP/(FP+TN) if FP+TN else 0
-            # x.append( FPR )
-            # y.append( TPR )
-            # print([TP,TN,FP,FN], TPR, FPR)
-        ix = np.argsort(np.array(x))
-        x = np.array(x)[ix]
-        y = np.array(y)[ix]
+
+        x_label, y_label = 'ACC', 'FNR' #Acc vs EI
+        x_label, y_label = 'TPR', 'FPR' #P(h0|H0) vs P(h0|H1) *para rechazar hipótesis
+        x_label, y_label = 'TNR', 'FNR' #P(h1|H1) vs P(h1|H0)
+        x_label, y_label = 'FNR', 'FPR' #EI vs EII
+        x, y = metric.compute(roc_curve, [x_label,y_label])
+        # x, y = metric.compute(roc_curve, ['FPR','TPR'])
+        AUC, x, y, th = metric.doAUC(x,y,th)
+        if len(experiments)<20: print(f"exp:{experiments}\ntrue:{true}\nth:{th}")
+        print(f"Area under curve={AUC}")
         import matplotlib.pyplot as plt
         plt.style.use('dark_background')
         plt.plot(x,y,'o-')
-        plt.xlabel('FPR')
-        plt.ylabel('TPR')
-        print(f"Area under curve={metric.doAUC(x,y)}")
+        for _x,_y,_th in zip(x,y,th): plt.text(_x,_y,f"{_th:.2}")
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
         plt.show()
 
 
