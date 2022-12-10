@@ -279,6 +279,9 @@ if __name__ == '__main__':
         for _x,_y,_th in zip(x,y,th): plt.text(_x,_y,f"{_th:.2}")
         plt.xlabel(x_label)
         plt.ylabel(y_label)
+        alpha = 0.05
+        plt.axvline(x=alpha)
+        plt.text(x=alpha+0.01,y=0.5,s=f"$\\alpha$={alpha}")
         plt.show()
 
 
