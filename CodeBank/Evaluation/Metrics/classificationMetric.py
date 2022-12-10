@@ -258,10 +258,10 @@ if __name__ == '__main__':
         metric(prob_1=experiments, true_label=true)
         th, roc_curve = metric.doROC(nSteps=10, groupByExperiments=False)
 
-        x_label, y_label = 'ACC', 'FNR' #Acc vs EI
-        x_label, y_label = 'TPR', 'FPR' #P(h0|H0) vs P(h0|H1) *para rechazar hipótesis
-        x_label, y_label = 'TNR', 'FNR' #P(h1|H1) vs P(h1|H0)
-        x_label, y_label = 'FNR', 'FPR' #EI vs EII
+        y_label, x_label = 'ACC', 'FNR' #Acc vs EI
+        y_label, x_label = 'TPR', 'FPR' #P(h0|H0) vs P(h0|H1) *para rechazar hipótesis
+        y_label, x_label = 'TNR', 'FNR' #P(h1|H1) vs P(h1|H0)
+        y_label, x_label = 'FNR', 'FPR' #EI vs EII
         x, y = metric.compute(roc_curve, [x_label,y_label])
         # x, y = metric.compute(roc_curve, ['FPR','TPR'])
         AUC, x, y, th = metric.doAUC(x,y,th)
