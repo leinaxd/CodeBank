@@ -4,6 +4,7 @@ import pandas as pd
 from transformers import AutoModelForMaskedLM, AutoTokenizer
 from transformers import logging
 from CodeBank.DatasetFramework.DataAugmentation.transformations import txtRandomSampling
+from CodeBank.DatasetFramework.DataAugmentation.transformations import txtRepunctuation
 
 from BackTranslation import BackTranslation
 # from CodeBank.Math.Random import choices
@@ -49,7 +50,7 @@ class txtAugmentation:
 
     """
     def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False, sleep=0):
-        self.transformation = {'synonyms':0,'srcLang':None,'tgtLang':None} #default Values
+        self.transformation = {'synonyms':0,'srcLang':None,'tgtLang':None,'repunctuation':False} #default Values
         self.sleep=sleep
         self.transformation.update(transformation)
 
@@ -62,6 +63,7 @@ class txtAugmentation:
             # self.model.config.max_position_embeddings = 512
             self.tokenizer = AutoTokenizer.from_pretrained(path)
             self.sampling = txtRandomSampling(self.transformation['synonyms'], maskToken=self.tokenizer.mask_token)
+
         # self.selection = choices('softmax')
         self.verbose=verbose
         self.count  = 0
@@ -70,6 +72,9 @@ class txtAugmentation:
 
         if self.transformation['tgtLang']:
             self.translator = BackTranslation()
+        if self.transformation['repunctuation']:
+            self.doRepunctuation = txtRepunctuation()
+        if self.verbose: print(self.transformation)
     # def __init__(self, transformations:dict, HuggingFaceLM:str, maskToken:str):
 
     #     self.sampling = txtRandomSampling(transformations['synonyms'], maskToken)
@@ -125,8 +130,9 @@ class txtAugmentation:
     def __call__(self, data:pd.Series):
         out = []
         for sample in data:
-            if self.transformation['synonyms']: sample = self.doSynonyms(sample)
-            if self.transformation['tgtLang']:  sample = self.doBackTranslation(sample)
+            if self.transformation['repunctuation']: sample = self.doRepunctuation(sample)
+            if self.transformation['synonyms']:      sample = self.doSynonyms(sample)
+            if self.transformation['tgtLang']:       sample = self.doBackTranslation(sample)
 
             out.append(sample)
         return pd.Series(out)
@@ -148,4 +154,5 @@ if __name__ =='__main__':
         from BackTranslation import BackTranslation
         A = BackTranslation()
         q = A.translate('hola cómo estás hoy?', src='es',tmp='zh-cn')
-        q.result_text
+        result = q.result_text
+        print(result)

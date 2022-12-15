@@ -7,6 +7,7 @@ class txtRepunctuation:
     Sources:
     - [oliverguhr github](https://github.com/oliverguhr/deepmultilingualpunctuation)
     - [modelo hugging face](https://huggingface.co/kredor/punctuate-all)
+    
     languages: 
       English, German, French, Spanish, Bulgarian, Italian, Polish, Dutch, Czech, Portugese, Slovak, Slovenian
     """
