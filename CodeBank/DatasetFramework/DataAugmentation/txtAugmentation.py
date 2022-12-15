@@ -49,13 +49,19 @@ class txtAugmentation:
 
 
     """
-    def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False, sleep=0):
+    def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False):
         self.transformation = {'synonyms':0,'srcLang':None,'tgtLang':None,'repunctuation':False} #default Values
-        self.sleep=sleep
         self.transformation.update(transformation)
+        self.verbose=verbose
 
+
+        if self.transformation['repunctuation']:
+            self.doRepunctuation = txtRepunctuation()
         if self.transformation['synonyms']:
+            self.doSoftmax=doSoftmax
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
+            self.count  = 0
+            self.max_length=512
             logging.set_verbosity_error() #Ignore unused weights warning. (this model is for finetunning)
             self.model = AutoModelForMaskedLM.from_pretrained(path)
             logging.set_verbosity_warning()
@@ -63,17 +69,8 @@ class txtAugmentation:
             # self.model.config.max_position_embeddings = 512
             self.tokenizer = AutoTokenizer.from_pretrained(path)
             self.sampling = txtRandomSampling(self.transformation['synonyms'], maskToken=self.tokenizer.mask_token)
-
-        # self.selection = choices('softmax')
-        self.verbose=verbose
-        self.count  = 0
-        self.max_length=512
-        self.doSoftmax=doSoftmax
-
         if self.transformation['tgtLang']:
             self.translator = BackTranslation()
-        if self.transformation['repunctuation']:
-            self.doRepunctuation = txtRepunctuation()
         if self.verbose: print(self.transformation)
     # def __init__(self, transformations:dict, HuggingFaceLM:str, maskToken:str):
 
@@ -106,7 +103,7 @@ class txtAugmentation:
         return txt
 
     def doBackTranslation(self, txt:str):
-        sleep = self.sleep
+        sleep = 0
         try:
             txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
         except:
