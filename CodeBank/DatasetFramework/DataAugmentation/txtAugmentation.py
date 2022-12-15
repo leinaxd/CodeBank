@@ -51,6 +51,7 @@ class txtAugmentation:
     """
     def __init__(self, path:str, transformation:dict, verbose=False, doSoftmax=False):
         self.transformation = {'synonyms':0,'srcLang':None,'tgtLang':None,'repunctuation':False} #default Values
+        for k in transformation: self.transformation[k] #raise error if the transformation doesn't exists 
         self.transformation.update(transformation)
         self.verbose=verbose
 
