@@ -74,7 +74,7 @@ class txtAugmentation:
         if self.transformation['repunctuation']:
             self.doRepunctuation = txtRepunctuation()
         if self.transformation['synonyms']:
-            self.doSynonyms = txtSynonyms(prob=self.transformation['synonyms'])
+            self.doSynonyms = txtSynonyms(prob=self.transformation['synonyms'], aug_max=200)
         if self.transformation['tgtLang']:
             self.translator = BackTranslation()
         if self.verbose: print(self.transformation)

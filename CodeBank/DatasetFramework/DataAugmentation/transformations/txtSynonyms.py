@@ -25,17 +25,17 @@ class txtSynonyms:
         - https://github.com/makcedward/nlpaug/blob/master/example/textual_language_augmenter.ipynb
     """
 
-    def __init__(self, model_path='wordnet', prob=0.3, customModel=False):
+    def __init__(self, model_path='wordnet', prob=0.3, aug_max=10, customModel=False):
         nltk.download('omw')
 
         if model_path == 'wordnet':
-            self.aug = naw.SynonymAug(aug_src='wordnet', lang='spa',aug_p=prob)
+            self.aug = naw.SynonymAug(aug_src='wordnet', lang='spa',aug_p=prob,aug_max=aug_max)
         else:    
             self.aug = naw.ContextualWordEmbsAug(model_path=model_path, aug_p=prob)
             # model_path='bert-base-multilingual-uncased'
             # model_path='dccuchile/bert-base-spanish-wwm-uncased' #BETO
         if customModel:
-            doSoftmax=False
+            doSoftmax=True
             self.doSoftmax=doSoftmax
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
             self.count  = 0
