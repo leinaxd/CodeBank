@@ -87,17 +87,23 @@ class txtAugmentation:
         except:
             sleep +=6
             print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
-            time.sleep(sleep)
             try:
-               txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
+                time.sleep(sleep)
+                txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
             except:
                 sleep *=10
                 print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
-                time.sleep(sleep)
                 try:
+                    time.sleep(sleep)
                     txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
                 except:
-                    raise RuntimeError('google translate has blocked your request, try again later.')
+                    sleep *= 5 #5mins
+                    print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
+                    try:
+                        time.sleep(sleep)
+                        txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
+                    except:
+                        raise RuntimeError('google translate has blocked your request, try again later.')
 
         return txt.result_text
 
