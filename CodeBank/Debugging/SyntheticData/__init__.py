@@ -1,0 +1,1 @@
+from .syntheticFunc import syntheticFunc
