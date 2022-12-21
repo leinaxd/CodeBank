@@ -1,6 +1,10 @@
 from typing import Union
 import pandas as pd
-from deepmultilingualpunctuation import PunctuationModel
+try:
+    from deepmultilingualpunctuation import PunctuationModel
+except:
+    print('deepmultilingualpunctuation not installed. ignoring')
+    pass
 
 class txtRepunctuation:
     """
