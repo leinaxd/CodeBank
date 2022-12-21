@@ -1,6 +1,7 @@
 import time
 from BackTranslation import BackTranslation
 import nlpaug.augmenter.word as naw
+import torch
 
 class txtBackTranslation:
     """
@@ -51,7 +52,6 @@ class txtBackTranslation:
         Helsinki-NLP/opus-mt-en-es
         Helsinki-NLP/opus-mt-es-de
         Helsinki-NLP/opus-mt-de-es
-
     """
 
     def __init__(self, srcLang:str, tgtLang:str):
@@ -61,7 +61,8 @@ class txtBackTranslation:
             self.model = BackTranslation()
             self.call = self.doBackTranslation_1
         else:
-            self.model = naw.BackTranslationAug(srcLang, tgtLang,max_length=1024)
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            self.model = naw.BackTranslationAug(srcLang, tgtLang,max_length=1024, device=device)
             self.call  = self.doBackTranslation_2
     def __call__(self, txt:str): return self.call(txt)
     
