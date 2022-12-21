@@ -18,14 +18,17 @@ class txtRepunctuation:
         self.model = PunctuationModel(model = 'kredor/punctuate-all')
     def __call__(self, data:Union[str, pd.Series]):
         if isinstance(data, str): return self.model.restore_punctuation(data)
-        if isinstance(data, pd.Series): raise NotImplementedError
-            # for sample in data:
-            #     return data.apply(self.model.restore_punctuation)
-        return self.model.restore_punctuation(data)
+        if isinstance(data, (pd.Series,list)):
+            out = []
+            for sample in data:
+                # return data.apply(self.model.restore_punctuation)
+                out.append(self.model.restore_punctuation(sample))
+            if isinstance(data, list): return out
+            else:                      return pd.Series(out)
 
 
 if __name__ == '__main__':
-    test = 2
+    test = 4
     original = """Cumpliendo con mi oficio piedra con piedra, pluma a pluma, pasa el invierno y deja sitios abandonados, habitaciones muertas: yo trabajo y trabajo, debo substituir tantos olvidos, llenar de pan las tinieblas, fundar otra vez la esperanza."""
     txt = """Cumpliendo con mi oficio piedra con piedra pluma a pluma pasa el invierno y deja sitios abandonados habitaciones muertas: yo trabajo y trabajo debo substituir tantos olvidos llenar de pan las tinieblas fundar otra vez la esperanza"""
     repunctuation = txtRepunctuation()
@@ -40,7 +43,21 @@ if __name__ == '__main__':
         data = pd.DataFrame({'src':[txt]})
         for sample in  data['src']:
             result = repunctuation(sample)
-            print(sample,'\n')
-            print(result,'\n')
-            print(original,'\n')
+            print(f"sample\n{sample}\n")
+            print(f"result\n{result}\n")
+            print(f"original\n{original}\n")
+    if test == 3:
+        print(f"test {test}: Dataframe repunctuation")
+        data = pd.DataFrame({'src':[txt]})
+        result = repunctuation(data['src'])
+        print(f"sample\n{data['src']}\n")
+        print(f"result\n{result}\n")
+        print(f"original\n{original}\n")
+    if test == 4:
+        print(f"test {test}: list repunctuation")
+        data = [txt]
+        result = repunctuation(data)
+        print(f"sample\n{data}\n")
+        print(f"result\n{result}\n")
+        print(f"original\n{original}\n")
         
