@@ -58,7 +58,8 @@ class txtBackTranslation:
         if len(srcLang) <= 4 and len(srcLang)<=4:
             self.srcLang = srcLang
             self.tgtLang = tgtLang
-            self.model = BackTranslation()
+            self.model = BackTranslation(url=['translate.google.com',
+                                              'translate.google.co.kr'])
             self.call = self.doBackTranslation_1
         else:
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
