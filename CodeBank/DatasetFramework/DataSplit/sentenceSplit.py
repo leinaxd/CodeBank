@@ -8,15 +8,19 @@ class sentenceSplit:
     <n_words>: number of words concatenated
     <overlap>: Porcentage of overlapped words
     """
-    def __init__(self, n_words:int, overlap:float=0, power=True):
+    def __init__(self, n_words:int, overlap:float=0, power=True, forceFullWindow=True):
         assert 0 < n_words, f"n_words must be positive"
         assert 0<=overlap and overlap<1, f"overlap must be a number between [0 and 1)"
         self.delimiter  = ' '
         self.n_words = n_words
         self.offset = int(overlap*n_words)
         # self.min_len = self.n_words*0.5 #at least do half window
-        self.min_len = self.n_words*overlap #at least do half window
+        if forceFullWindow:
+            self.min_len = self.n_words
+        else:
+            self.min_len = self.n_words*overlap #at least do half window
         self.power = power
+
     def splitString(self, txt:str)-> list:
         txt = txt.split(self.delimiter)
         result = []
