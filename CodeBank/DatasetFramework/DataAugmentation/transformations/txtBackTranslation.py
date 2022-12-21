@@ -62,7 +62,7 @@ class txtBackTranslation:
             self.call = self.doBackTranslation_1
         else:
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
-            self.model = naw.BackTranslationAug(srcLang, tgtLang,max_length=1024, device=device)
+            self.model = naw.BackTranslationAug(srcLang, tgtLang, max_length=512, device=device)
             self.call  = self.doBackTranslation_2
     def __call__(self, txt:str): return self.call(txt)
     
