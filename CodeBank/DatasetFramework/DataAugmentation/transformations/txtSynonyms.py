@@ -32,6 +32,7 @@ class txtSynonyms:
             self.aug = naw.SynonymAug(aug_src='wordnet', lang='spa',aug_p=prob,aug_max=aug_max)
         else:    
             self.aug = naw.ContextualWordEmbsAug(model_path=model_path, aug_p=prob)
+            # naw.BackTranslationAug()
             # model_path='bert-base-multilingual-uncased'
             # model_path='dccuchile/bert-base-spanish-wwm-uncased' #BETO
         if customModel:

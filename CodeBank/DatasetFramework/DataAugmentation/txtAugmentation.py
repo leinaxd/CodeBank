@@ -1,14 +1,12 @@
 
-import torch
 import pandas as pd
 
 
-from CodeBank.DatasetFramework.DataAugmentation.transformations import txtRandomSampling
 from CodeBank.DatasetFramework.DataAugmentation.transformations import txtRepunctuation
 from CodeBank.DatasetFramework.DataAugmentation.transformations import txtSynonyms
-from BackTranslation import BackTranslation
+from CodeBank.DatasetFramework.DataAugmentation.transformations import txtBackTranslation
 
-import time
+
 
 class txtAugmentation:
     """
@@ -19,7 +17,6 @@ class txtAugmentation:
     transformations: Dict[type:str, prob:float]
         - synonyms
         - BackTranslation: language
-            chinese, english, spanish
             'af': 'afrikaans',               'sq': 'albanian', 
             'am': 'amharic',                 'ar': 'arabic',                    'hy': 'armenian', 
             'az': 'azerbaijani',             'eu': 'basque',                    'be': 'belarusian',              
@@ -70,42 +67,15 @@ class txtAugmentation:
         self.transformation.update(transformation)
         self.verbose=verbose
 
-
         if self.transformation['repunctuation']:
             self.doRepunctuation = txtRepunctuation()
         if self.transformation['synonyms']:
             self.doSynonyms = txtSynonyms(prob=self.transformation['synonyms'], aug_max=200)
         if self.transformation['tgtLang']:
-            self.translator = BackTranslation()
+            self.doBackTranslation = txtBackTranslation(self.transformation['srcLang'],self.transformation['tgtLang'])
         if self.verbose: print(self.transformation)
 
 
-    def doBackTranslation(self, txt:str):
-        sleep = 0
-        try:
-            txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
-        except:
-            sleep +=6
-            print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
-            try:
-                time.sleep(sleep)
-                txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
-            except:
-                sleep *=10
-                print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
-                try:
-                    time.sleep(sleep)
-                    txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
-                except:
-                    sleep *= 5 #5mins
-                    print(f'googletranslate has blocked your request. Waiting: {sleep} secs')
-                    try:
-                        time.sleep(sleep)
-                        txt = self.translator.translate(txt,src=self.transformation['srcLang'],tmp=self.transformation['tgtLang'], sleeping=sleep)
-                    except:
-                        raise RuntimeError('google translate has blocked your request, try again later.')
-
-        return txt.result_text
 
 
     def __call__(self, data:pd.Series):
@@ -114,7 +84,6 @@ class txtAugmentation:
             if self.transformation['repunctuation']: sample = self.doRepunctuation(sample)
             if self.transformation['synonyms']:      sample = self.doSynonyms(sample)
             if self.transformation['tgtLang']:       sample = self.doBackTranslation(sample)
-
             out.append(sample)
         return pd.Series(out)
 
@@ -131,10 +100,3 @@ if __name__ =='__main__':
         print(out[0])
         print(out[1])
 
-    if test == 2:
-        from BackTranslation import BackTranslation
-        A = BackTranslation()
-        q = A.translate('hola cómo estás hoy?', src='es',tmp='zh-cn')
-        result = q.result_text
-        print(result)
-    
