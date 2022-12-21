@@ -18,10 +18,10 @@ class txtRepunctuation:
         self.model = PunctuationModel(model = 'kredor/punctuate-all')
     def __call__(self, data:Union[str, pd.Series]):
         if isinstance(data, str): return self.model.restore_punctuation(data)
-        if isinstance(data, pd.Series): 
-            raise NotImplementedError
+        if isinstance(data, pd.Series): raise NotImplementedError
             # for sample in data:
             #     return data.apply(self.model.restore_punctuation)
+        return self.model.restore_punctuation(data)
 
 
 if __name__ == '__main__':

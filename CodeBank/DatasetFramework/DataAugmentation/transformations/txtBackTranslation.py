@@ -96,8 +96,8 @@ class txtBackTranslation:
 
 
 if __name__ == '__main__':
-    corpus_1 =     original = """Cumpliendo con mi oficio piedra con piedra, pluma a pluma, pasa el invierno y deja sitios abandonados, habitaciones muertas: yo trabajo y trabajo, debo substituir tantos olvidos, llenar de pan las tinieblas, fundar otra vez la esperanza."""
-    test = 2
+    corpus_1 = """Cumpliendo con mi oficio piedra con piedra, pluma a pluma, pasa el invierno y deja sitios abandonados, habitaciones muertas: yo trabajo y trabajo, debo substituir tantos olvidos, llenar de pan las tinieblas, fundar otra vez la esperanza."""
+    test = 3
     if test == 1:
         A = BackTranslation()
         q = A.translate('hola cómo estás hoy?', src='es',tmp='zh-cn')
@@ -109,5 +109,12 @@ if __name__ == '__main__':
 
         aug = txtBackTranslation(src,tgt)
         out = aug(corpus_1)
+        print(out)
+    if test == 3:
+        src = 'Helsinki-NLP/opus-mt-es-de'
+        tgt = 'Helsinki-NLP/opus-mt-de-es'
+
+        aug = txtBackTranslation(src,tgt)
+        out = aug(['hola estaba leyendo este', 'texto hasta que me dí cuenta', 'que estaba partido'])
         print(out)
     
