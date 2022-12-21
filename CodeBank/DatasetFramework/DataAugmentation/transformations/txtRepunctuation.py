@@ -4,7 +4,6 @@ try:
     from deepmultilingualpunctuation import PunctuationModel
 except:
     print('deepmultilingualpunctuation not installed. ignoring')
-    pass
 
 class txtRepunctuation:
     """
