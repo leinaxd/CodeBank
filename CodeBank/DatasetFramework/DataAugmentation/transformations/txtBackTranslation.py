@@ -67,7 +67,9 @@ class txtBackTranslation:
     def __call__(self, txt:str): return self.call(txt)
     
     def doBackTranslation_2(self, txt:str):
-        return self.model.augment(txt)[0]
+        out = self.model.augment(txt)
+        if isinstance(txt,str): return out[0]
+        else:                   return out
 
     def doBackTranslation_1(self, txt:str):
         sleep = 0
