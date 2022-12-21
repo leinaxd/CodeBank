@@ -52,7 +52,9 @@ class txtSynonyms:
     #     self.modelLM = HuggingFaceLM
 
     def __call__(self, txt:Union[str,List[str]]): 
-        return self.aug.augment(txt)
+        out = self.aug.augment(txt)
+        if isinstance(txt, str): return out[0]
+        else:                    return out
 
 
     def doSynonyms(self, txt:str):

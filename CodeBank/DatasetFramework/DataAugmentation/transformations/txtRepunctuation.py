@@ -37,9 +37,10 @@ if __name__ == '__main__':
         print(f"original\n{original}\n")
     if test == 2:
         print(f"test {test}: Dataframe repunctuation")
-        data = pd.DataFrame({'src':txt})
-        result = repunctuation(data['src'])
-        print(data['src'])
-        print(result)
-        print(original)
+        data = pd.DataFrame({'src':[txt]})
+        for sample in  data['src']:
+            result = repunctuation(sample)
+            print(sample,'\n')
+            print(result,'\n')
+            print(original,'\n')
         
