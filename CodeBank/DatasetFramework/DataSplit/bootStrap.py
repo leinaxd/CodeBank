@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Union, List
 import pandas as pd
 try:
     from datasetSplit import datasetSplit
@@ -31,7 +31,7 @@ class bootStrap:
     def __init__(self, 
             train_test_pcn:float, 
             sample_size:int, 
-            categoryField:str='index', 
+            categoryField:Union[str,List[str]]='index', 
             forceEqualLen=False,
             ):
         assert 0<train_test_pcn and train_test_pcn < 1, f"train_test_pcn must lay between (0,1)"

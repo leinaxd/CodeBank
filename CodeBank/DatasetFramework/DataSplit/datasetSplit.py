@@ -48,7 +48,7 @@ class datasetSplit:
 
     def __init__(self, 
             groupsProportions:Union[dict, list]={'train':1, 'val':1,'test':1}, 
-            categoryField:str='index', 
+            categoryField:Union[str,List[str]]='index', 
             prioritySmaller=True, 
             shuffle=True,
             randomSeed=True,
@@ -137,17 +137,17 @@ class datasetSplit:
     def forcedSampledGroup(self, data:pd.DataFrame):
         
         samples = data.groupby(self.categoryField).indices
+
         for key, ixs in samples.items(): #{group_class : index_list}
             ixs = ixs.tolist()
             if self.shuffle: self.ixGenerator.shuffle(ixs)
             samples[key] = ixs
-
         
         if self.forceEqualLen:
             maxLen = min([len(v) for v in samples.values()])
             samples = {k:v[:maxLen] for k,v in samples.items()}
         groups_len = self.splitRatio(maxLen)
-
+        
         samples_ix = {key:[] for key in groups_len.keys()}
         while sum(groups_len.values()):
             for group, count in groups_len.items():
@@ -177,12 +177,11 @@ if __name__ == '__main__':
         print(f"{'='*50}\ndata\tlen:{len(data)}\n{data}\n{'='*50}")
         print(f"proportions: {proportions}\n")
         data = splitter(data)
-        print(f"train\tlen:{len(data['train'])}\n{data['train'] if len(data['train']) else ''}\n")
-        print(f"test\tlen:{len(data['test'])}\n{data['test'] if len(data['test']) else ''}\n")
-        print(f"val\tlen:{len(data['val'])}\n{data['val'] if len(data['val']) else ''}\n")
+        for key in proportions:
+            print(f"{key}\tlen:{len(data[key])}\n{data[key] if len(data[key]) else ''}\n")
         print('\n')
 
-    test = 2
+    test = 8
     if test == 1:
         data = pd.DataFrame({'class A':['A'],
                              'class B':['alpha'],
@@ -252,3 +251,9 @@ if __name__ == '__main__':
         data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J','k','l','m','n','o','p','q','r','s','t','u','v'],
                              'category':  [1,2,1,1,2,2,3,3,3,1,1,1,1,1,2,3,1,2,3,1,2,3]}) #3 samples of each group
         do(data,'category', {'train':1,'val':2,'test':2},True)
+    elif test == 8:
+        print(f'test {test}\nforce equal length within 2 categories')
+        data = pd.DataFrame({'data':['A','B','C','D','E', 'F','G','H','I','J','k','l','m','n','o','p'],
+                             'category_1':  [1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,3],
+                             'category_2':  [1,1,1,2,2,1,1,1,2,2,1,1,1,1,2,2]}) #3 samples of each group
+        do(data,['category_1', 'category_2'], {'train':1,'test':1},True)
