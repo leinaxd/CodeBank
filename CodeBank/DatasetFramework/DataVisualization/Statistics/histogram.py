@@ -35,14 +35,15 @@ class histogram:
         data:np.ndarray,
         histtype='bar', #do barPlot or contour plot
         barWidth_pcn=0.95,
-        bandwidth=1.
+        bandwidth=1.,
+        **plt_args
         ):
         if histtype.lower() in ['gaussian','tophat','epanechnikov','exponential','linear','cosine']: 
-            return self.doKDE(ax, data, histtype, bandwidth)
+            return self.doKDE(ax, data, histtype, bandwidth, **plt_args)
         if histtype.lower() in ['bar']: 
-            return self.doBar(ax, data, histtype)
+            return self.doBar(ax, data, **plt_args)
         if histtype.lower() in ['step']:
-            return self.doStep(ax, data, histtype)
+            return self.doStep(ax, data, **plt_args)
 
 
     def doBins(self, data):
@@ -70,13 +71,13 @@ class histogram:
             color = ax._get_lines.get_next_color()
             self.plot_args.update(color = color)
 
-    def doBar(self, ax:plt.Axes, data:np.ndarray, histtype:str):
+    def doBar(self, ax:plt.Axes, data:np.ndarray, **plt_args):
         barWidth_pcn = 0.95
         bins, binWidth = self.doBins(data)
-        lines = ax.bar(bins.keys(),bins.values(),width=binWidth*barWidth_pcn, color=self.getColor(ax))
+        lines = ax.bar(bins.keys(),bins.values(),width=binWidth*barWidth_pcn, color=self.getColor(ax), **plt_args)
         return list(bins.values()), list(bins.keys()), lines #probs, x_axis, patches
 
-    def doStep(self, ax:plt.Axes, data:np.ndarray, histtype:str):
+    def doStep(self, ax:plt.Axes, data:np.ndarray, **plt_args):
         bins, binWidth = self.doBins(data)
         x, y = [None], [0]
         for pos, prob in bins.items():
@@ -87,8 +88,8 @@ class histogram:
         x[0] = x[1] #start & end with zero prob
         x.append(x[-1])
         y.append(0)
-        if self.plot_args['fill']: lines = ax.fill(x, y, **self.plot_args)
-        else:                      lines = ax.plot(x, y)
+        if self.plot_args['fill']: lines = ax.fill(x, y, **self.plot_args, **plt_args)
+        else:                      lines = ax.plot(x, y, **plt_args)
         # nTicks = 5
         # tick_range = max(bins.values())
         # msd = np.round_(np.log10(tick_range), 0)
@@ -98,7 +99,7 @@ class histogram:
         # ax.set_yticks(ticks)
         return list(bins.values()), list(bins.keys()), lines #probs, x_axis, patches
     
-    def doKDE(self, ax:plt.Axes, data:np.ndarray, histtype:str, bandwidth:float):
+    def doKDE(self, ax:plt.Axes, data:np.ndarray, histtype:str, bandwidth:float, **plt_args):
         # bandwidth = 1/self.nBins
         
         x_axis = np.linspace(min(data),max(data),10*self.nBins)[:,np.newaxis]
@@ -107,7 +108,7 @@ class histogram:
         kde     = KernelDensity(kernel=histtype,bandwidth=bandwidth).fit(data)
         logProb = kde.score_samples(x_axis)
         probs   = np.exp(logProb)
-        lines = ax.fill_between(x_axis[:,0],probs,alpha=0.7,color=self.getColor(ax))
+        lines = ax.fill_between(x_axis[:,0],probs,alpha=0.7,color=self.getColor(ax), **plt_args)
         return probs, x_axis, lines
 
 
