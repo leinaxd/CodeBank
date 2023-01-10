@@ -42,10 +42,18 @@ class classificationMetric:
             list of confusion matrix computed for diferents thresholds
 
     Computes
-        TP: True positives; count(Predicted(positive) == True(positive))
-        TN: True negatives: count(Predicted(negative) == True(negative) )
-        FP: False positives: count(Predicted(positive) == True(negative))
-        FN: False negative: count(Predicted(negative) == True(positive))
+        invertHypothesis = True
+            H0 = CTR, H1 = disease
+            TP: True positive:  count( Reject H0 == True(H1) )
+            TN: True negative:  count( Fail Reject H0 == True(H0) )
+            FP: False positive: count( Reject H0 == True(H0) )
+            FN: False negative:  count( Fail Reject H0 == True(H1))
+        invertHypothesis = False
+            H0 = disease, H1 = CTR
+            TP: True positive: count(Predicted(H0) == True(H0))
+            TN: True negative: count(Predicted(H1) == True(H1) )
+            FP: False positive: count(Predicted(H0) == True(H1))
+            FN: False negative: count(Predicted(H1) == True(H0))
         Accuracy = TP+TN / Total
         ROC: Apply diferent Biases in order to plot the ROC curve
         AUC: Area under the curve
@@ -61,9 +69,11 @@ class classificationMetric:
     TODO:
         H0_region: could be a list of intervals where H0 holds true for classification
     """
-    def __init__(self):
+    def __init__(self, invertHypothesis=False):
         self.history = [] #list of experiments [[prob_1,true_label] ...]
         self.currentExperiment = [] #list of tuples [(prob_1, prob_2..., true_label) ...]
+        assert invertHypothesis, f"verify invertHypothesis is right. Its not just inverting hypothesis..."
+        self.invertedHypothesis = invertHypothesis
 
     def load_state(self, history:list):
         self.history = history
@@ -199,14 +209,24 @@ class classificationMetric:
 
             #be careful, 0 means H0, 1 means H1, 
             # don't confuse with True/False or Positive/Negative
-            if pred == 0 and true == 0: #H0 ^ H0
-                TP += 1
-            if pred == 1 and true == 1: #H1 ^ H1
-                TN += 1 
-            if pred == 0 and true == 1: #H0 ^ H1
-                FP += 1 
-            if pred == 1 and true == 0: #H1 ^ H0
-                FN += 1 
+            if self.invertedHypothesis:
+                if pred == 1 and true == 1: #Reject H0 ^ H1
+                    TP += 1 
+                if pred == 0 and true == 0: #Fail Reject H0 ^ H0
+                    TN += 1
+                if pred == 0 and true == 1: #Fail Reject H0 ^ H1
+                    FN += 1 
+                if pred == 1 and true == 0: #Reject H0 ^ H0
+                    FP += 1 
+            else:
+                if pred == 0 and true == 0: #H0 ^ H0
+                    TP += 1
+                if pred == 1 and true == 1: #H1 ^ H1
+                    TN += 1 
+                if pred == 0 and true == 1: #H0 ^ H1
+                    FP += 1 
+                if pred == 1 and true == 0: #H1 ^ H0
+                    FN += 1 
         return (TP,TN,FP,FN)
 
     def doAUC(self, x:List[float], y:List[float], thresholds:List[float], sorted=True):#data:List[Tuple[int,int]]):
