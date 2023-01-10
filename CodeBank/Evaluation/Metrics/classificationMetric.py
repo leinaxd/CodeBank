@@ -72,7 +72,7 @@ class classificationMetric:
     def __init__(self, invertHypothesis=False):
         self.history = [] #list of experiments [[prob_1,true_label] ...]
         self.currentExperiment = [] #list of tuples [(prob_1, prob_2..., true_label) ...]
-        assert invertHypothesis, f"verify invertHypothesis is right. Its not just inverting hypothesis..."
+        assert not invertHypothesis, f"verify invertHypothesis. Its not just inverting hypothesis..."
         self.invertedHypothesis = invertHypothesis
 
     def load_state(self, history:list):
