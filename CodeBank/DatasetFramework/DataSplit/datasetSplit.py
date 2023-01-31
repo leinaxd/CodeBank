@@ -41,6 +41,8 @@ class datasetSplit:
     References:
         https://www.v7labs.com/blog/train-validation-test-set
     """
+    
+    #TODO: ixGenerator should be local, not a class member
     seed = 0
     ixGenerator = Random(seed) #An own generator guarantees reproducibility, otherwise 
                                # an external sample of this module would shift the sequence, 
@@ -65,6 +67,8 @@ class datasetSplit:
         self.groupsProportions = {key:value/den for key,value in groupsProportions.items()}
         #random seed
         if randomSeed: self.__class__.ixGenerator = Random(time.time())
+    def setSeed(self, seed):
+        self.ixGenerator.seed(seed)    
         
     def splitRatio(self, data_size:int) -> dict:
         """
@@ -158,8 +162,7 @@ class datasetSplit:
 
         return samples_ix
 
-    def __call__(self, data:pd.DataFrame, seed=0, returnSamples=False, resetIx=True) -> pd.DataFrame:
-        if seed: self.ixGenerator.seed(seed)
+    def __call__(self, data:pd.DataFrame, returnSamples=False, resetIx=True) -> pd.DataFrame:
         if self.categoryField in [None, 'index']: samples_ix  = self.sampleByIndex(data)
         elif self.forceEqualLen:                  samples_ix  = self.forcedSampledGroup(data)
         else:                                     samples_ix  = self.sampleByGroup(data)

@@ -59,6 +59,7 @@ class bootStrap:
             seed=0,
             returnSamples=False
             ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        if seed: self.splitter.setSeed(seed) #make a deterministic choice
 
         for _ in range(self.sample_size):
             data = self.splitter(dataset, seed=seed, returnSamples=returnSamples)
