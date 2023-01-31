@@ -40,18 +40,33 @@ class bootStrap:
         nTrain = train_test_pcn
         nTest  = 1-train_test_pcn
         self.splitter = datasetSplit({'train':nTrain,'test':nTest}, categoryField=categoryField, forceEqualLen=forceEqualLen)
+        self.state = []
     def __len__(self): 
         return self.sample_size
 
+    def loadState(self, state):
+        self.state = state
+    def generateState(self, dataset:pd.DataFrame):
+        """generate the ix for paired data"""
+        raise NotImplementedError
+        self.state = [] #simulation list of dicts of ix
+        for _ in range(self.sample_size):
+            self.state.append( self.splitter(dataset, returnSamples=True) )
+        return self.state
+
     def __call__(self, 
-            dataset:pd.DataFrame
+            dataset:pd.DataFrame,
+            seed=0,
+            returnSamples=False
             ) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
         for _ in range(self.sample_size):
-            data = self.splitter(dataset) #splits the dataset into K-folds
-            train_dataset = data['train']
-            test_dataset = data['test']
-            yield train_dataset, test_dataset
+            data = self.splitter(dataset, seed=seed, returnSamples=returnSamples)
+            yield data['train'], data['test']
+        # for samples_ix in state:
+            # train_dataset = dataset.iloc[samples_ix['train']].reset_index()
+            # test_dataset = dataset.iloc[samples_ix['test']].reset_index()
+            # yield train_dataset, test_dataset
         
 
 if __name__ == '__main__':

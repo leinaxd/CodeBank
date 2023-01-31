@@ -158,13 +158,14 @@ class datasetSplit:
 
         return samples_ix
 
-    def __call__(self, data:pd.DataFrame, returnSamples=False, resetIx=True) -> pd.DataFrame:
+    def __call__(self, data:pd.DataFrame, seed=0, returnSamples=False, resetIx=True) -> pd.DataFrame:
+        if seed: self.ixGenerator.seed(seed)
         if self.categoryField in [None, 'index']: samples_ix  = self.sampleByIndex(data)
         elif self.forceEqualLen:                  samples_ix  = self.forcedSampledGroup(data)
         else:                                     samples_ix  = self.sampleByGroup(data)
         
         if returnSamples:  return samples_ix
-        
+
         sets = {key:data.iloc[ix] for key, ix in samples_ix.items()}
         
         if resetIx: #reset original index
