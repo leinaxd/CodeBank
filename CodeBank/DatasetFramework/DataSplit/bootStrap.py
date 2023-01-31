@@ -62,7 +62,7 @@ class bootStrap:
         if seed: self.splitter.setSeed(seed) #make a deterministic choice
 
         for _ in range(self.sample_size):
-            data = self.splitter(dataset, seed=seed, returnSamples=returnSamples)
+            data = self.splitter(dataset, returnSamples=returnSamples)
             yield data['train'], data['test']
         # for samples_ix in state:
             # train_dataset = dataset.iloc[samples_ix['train']].reset_index()
