@@ -1,0 +1,20 @@
+
+- Regularization  |
+    - min J + R
+    J se minimiza viendo el training_set
+    R se minimiza al observar el validation set.
+
+    Proponer un regularizador que sea una red neuronal.
+    params* = argmin J(train_dataset, params) + R(val_dataset, params)
+
+    Algoritmo 1
+    1. Inicializar J_params y R_params aleatoriamente
+    2. Entrenar J(params) + R(params=fix) con train_dataset
+    3. Entrenar J(params=fix) + R(params) con val_dataset
+    4. Evaluar J(params=fix) + R(params=fix)
+
+    Algoritmo 2.
+    1. Inicializar params y hyperparams aleatoriamente
+    2. Entrenar J(params) + R(hyperparams=fix) con train_dataset
+    3. Entrenar J(params=fix) + R(hyperparams) con val_dataset
+    4. Evaluar J(params=fix; hyperparams) + R(hyperparams)

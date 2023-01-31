@@ -14,3 +14,36 @@ IA.-> graphs -> spanning trees)
     -> Plot its UML diagram (diferents levels)
     UML diagram
         https://www.youtube.com/watch?v=WnMQ8HlmeXc -->
+
+
+
+- Modelos| Metadata |
+    La diferencia entre GPT-2 y BERT es 
+        - Cómo fueron entrenados
+        - Cómo implementan los embeddings.
+
+    Crear modelos por partes
+        - Pueda intercambiar el embedding GPT por BERT y viceversa / otros
+        De esta manera puedo combinar diferntes partes pre-entrenadas entre sí
+- DataModels |
+    - https://www.youtube.com/watch?v=r7Sv-udvE2M
+    Modelar las tendencias de los datos
+    Qué necesitas para resolver la tarea de ML
+        - Brittleness. (fragilidad) Cómo mejora el modelo con la cantidad de datos
+        - Qué fracción de datos son anomalías
+        - Counterfactuals. (Contrafácticos) 
+            Se puede predecir el efecto de remover un subconjuntos de muestras del training_set?
+            -> antes de entrenar removiendo muestras, puedo predecir su rendimiento?
+            -> Remover k muestras según. 1.Para un tgt remover las mas influenciables 2.Muestras similares (espacio representación)
+    Embedding
+        El modelo lineal, tiene parámetros que pueden ser usados con embeddings (dim num muestras)
+        - Si dos muestras son similares s(x1, x2) se puede crear un grafo que las conecta con peso s(x1,x2)=theta_1^T theta_2
+        - Se pueden hacer clusters al grafo
+        - Se puede hacer PCA para conocer las muestras mas importantes de entrenamiento!
+
+- Graph vs Embeddings | 
+    - Se puede pasar de Embeddings a Graph mediante la función de similitud
+        Aij = sim(Xi, Xj) 
+        Aij = Th_i^T Th_j
+    - Se puede pasar de Grafo a embeddings (con producto interno)
+        
