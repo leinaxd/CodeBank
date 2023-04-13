@@ -21,14 +21,6 @@ class Node:
     def __init__(self, id): self.id = id
     def __str__(self): return str(self.id)
 
-
-class Node:
-    """
-    A node is a holder for a function, a weight or just empty
-    """
-    def __init__(self, id): self.id = id
-    def __str__(self): return str(self.id)
-
 class BaseGraph(object):
     """
     A weighted Graph is a graph with a weight for each arc.

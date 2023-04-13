@@ -1,16 +1,8 @@
 
 
-from typing import List, Union, Dict, Callable
-from CodeBank.DataFramework.DataStructures.Graph import WeightedGraph, Edge
-
-class SearchGraph(WeightedGraph):
-    def __init__(self, heuristic):
-        super().__init__()
-        self.heuristic = heuristic
-    
-    def search(self, start_node:int, goal_nodes:Union[int, List[int]]):
-        if isinstance(goal_nodes, int): goal_nodes = [goal_nodes]
-        return self.heuristic(self, start_node, goal_nodes)
+from typing import List, Dict
+from CodeBank.DataFramework.DataStructures.Graph import Edge
+from CodeBank.DataFramework.DataStructures.Graph import SearchGraph
 
 class ASTAR:
     """A*
