@@ -5,6 +5,7 @@ A library for code reutilization
 
 In order to decouple/isolate i suggest to use the following convention:
 
+Recall the software design principle "Dependency Injection".
 ```
 class yourFunction:
     """
