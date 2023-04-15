@@ -7,9 +7,11 @@ In order to decouple/isolate i suggest to use the following convention:
 
 Recall the design principle called "Dependency Injection".
 ```
-class yourFunction:
+# your_model.py
+class YourModel:
     """
-    yourFunction DOC
+    YourModel DOC (i.e. latex)
+        y_n = x_n + x_{n-1} + x_{n-2} + ...
     """
     def __init__(self, *args,**kwargs):
         """
@@ -26,6 +28,17 @@ class yourFunction:
         EXECUTION:
             Here you query the model with custom funcionality
         """
+
+if __name__=='__test__':
+    test = 1
+    if test == 1:
+        import OtherModel
+        print(f"test {test} Applying some model")
+        dependency = OtherModel()
+        model = YourModel(dependency)
+        out   = model([1,2,3]) #apply data
+        print(out)
+
 ```
 
 
