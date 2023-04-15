@@ -26,7 +26,7 @@ class YourModel:
     def method(self):
         """
         EXECUTION:
-            Here you query the model with custom funcionality
+            You are also allowed to query the model with custom funcionality
         """
 
 if __name__=='__test__':
