@@ -5,10 +5,13 @@ A library for code reutilization
 
 In order to decouple/isolate i suggest to use the following convention:
 
+Recall the design principle called "Dependency Injection".
 ```
-class yourFunction:
+# your_model.py
+class YourModel:
     """
-    yourFunction DOC
+    YourModel DOC (i.e. latex)
+        y_n = x_n + x_{n-1} + x_{n-2} + ...
     """
     def __init__(self, *args,**kwargs):
         """
@@ -23,27 +26,22 @@ class yourFunction:
     def method(self):
         """
         EXECUTION:
-            Here you query the model with custom funcionality
+            You are also allowed to query the model with custom funcionality
         """
+
+if __name__=='__test__':
+    test = 1
+    if test == 1:
+        import OtherModel
+        print(f"test {test} Applying some model")
+        dependency = OtherModel()
+        model = YourModel(dependency)
+        out   = model([1,2,3]) #apply data
+        print(out)
+
 ```
 
 
-# Graph aided Software Analysis
-
-The best way to understand the code is with an undirected (semantic) Graph.
-
-Instead of defining an inheritance, i propose a tree structure dependency graph.
-
-
-Where
-- Each node is a code fragment self-documented.
-- Each edge is a requirement submodule
-
-Then
-- Plot the "goal tree" graph
-- Show the current implementation path as a tree in the graph. 
-- Search the minimum entropy tree. (The shallower tree)
-MINIMUM/MAXIMUM ENTROPY SPANNING TREE
 
 ## Owner:
 - Author: Eichenbaum, Daniel. eichenbaum.daniel@gmail.com

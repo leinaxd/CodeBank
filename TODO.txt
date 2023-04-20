@@ -1,0 +1,8 @@
+1. Refactor code
+    i.   Delete useless modules
+    ii.  rename modules according the pip convention (using underscore _ )
+
+2. Build a DEMO for each module
+    i.  Build a webpage
+    ii. Upload a demo for each module
+    
