@@ -1,0 +1,9 @@
+adversarial training
+    - Perturba la entrada
+
+tang prop
+    - regulariza con salida
+    - La salida es mas robusta a cambios de entrada
+double backprop
+    - regulariza con loss
+    - El sistema resuelve la tarea mejor
